@@ -29,4 +29,31 @@ server <- function(input, output) {
       options = list(scrollX = TRUE)
    )
    
+   output$univariate_summary <- shiny::renderUI({
+      
+      variable <- input$variable_name
+      
+      if ((!is.null(variable)) && (variable != '---')) {
+         
+         summarytools::st_options(
+            footnote = NA,
+            headings = TRUE,
+            plain.ascii = FALSE,
+            dfSummary.varnumbers = FALSE
+         )
+         
+         univ_summary <- housing_datasets %>%
+            dplyr::select(input$variable_name) %>%
+            summarytools::dfSummary()
+         
+         attr(univ_summary, "data_info")$Data.frame <- paste("Feature:", variable)
+         
+         univ_summary %<>% print(method = "render")
+         
+         univ_summary
+         
+      }
+      
+   })
+   
 }

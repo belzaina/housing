@@ -85,6 +85,24 @@ ui <- dashboardPage(
                   
                ),
                
+               conditionalPanel(
+                  
+                  condition = "input.variable_name !== '---'",
+                  
+                  box(
+                     
+                     title       = span(icon("database"), 
+                                        HTML('&nbsp;'), 
+                                        strong("Housing Dataset")),
+                     status      = "primary",
+                     solidHeader = TRUE,
+                     width       = 8,
+                     htmlOutput("univariate_summary")
+                     
+                  ),
+                  
+               ),
+               
             ),
             
          ),
