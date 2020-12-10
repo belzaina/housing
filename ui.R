@@ -97,7 +97,7 @@ ui <- dashboardPage(
                      status      = "primary",
                      solidHeader = TRUE,
                      width       = 8,
-                     htmlOutput("univariate_summary")
+                     htmlOutput("summary_stats")
                      
                   ),
                   
