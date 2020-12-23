@@ -2,14 +2,14 @@ library(readxl)
 library(magrittr)
 
 
-housing_datasets <- readxl::read_excel('hmeq.xls', sheet = 'hmeq')
+housing_dataset <- readxl::read_excel('data/hmeq.xls', sheet = 'hmeq')
 
-n_rows <- nrow(housing_datasets)
+n_rows <- nrow(housing_dataset)
 
-n_cols <- ncol(housing_datasets)
+n_cols <- ncol(housing_dataset)
 
 missing_values <- round(
-   100 * sum(is.na(housing_datasets)) / (n_rows * n_cols), 
+   100 * sum(is.na(housing_dataset)) / (n_rows * n_cols), 
    2
 )
 
@@ -24,11 +24,11 @@ server <- function(input, output) {
    output$colnames_select_input <- renderUI(
       selectInput("variable_name", 
                   "Please choose a variable:", 
-                  c('---', sort(colnames(housing_datasets), decreasing = TRUE)))
+                  c('---', sort(colnames(housing_dataset), decreasing = TRUE)))
    )
    
    output$housing_datatable <- renderDataTable(
-      housing_datasets,
+      housing_dataset,
       options = list(scrollX = TRUE)
    )
    
@@ -43,7 +43,7 @@ server <- function(input, output) {
             dfSummary.varnumbers = FALSE
          )
          
-         univ_summary <- housing_datasets %>%
+         univ_summary <- housing_dataset %>%
             dplyr::select(input$variable_name) %>%
             summarytools::dfSummary()
          
@@ -51,7 +51,7 @@ server <- function(input, output) {
          
          univ_summary %<>% print(method = "render")
          
-         bivar_summary <- housing_datasets %>%
+         bivar_summary <- housing_dataset %>%
             dplyr::select(input$variable_name, BAD) %>%
             dplyr::group_by(BAD) %>%
             summarytools::dfSummary()
