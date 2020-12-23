@@ -1,0 +1,33 @@
+dist: xenial
+sudo: false
+latex: false
+
+language: r
+
+r: 
+  - release
+
+r_packages:
+  - rsconnect
+  - shiny
+  - shinydashboard
+  - DT
+  - readxl
+  - magrittr
+  - dplyr
+  - tidyr
+  - data.table
+  - mltools
+  - summarytools
+
+apt_packages:
+  - libgdal-dev
+  - libudunits2-dev
+
+warnings_are_errors: false
+
+cache:
+  packages: true
+
+script:
+  - R -f deploy.R
