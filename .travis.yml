@@ -19,6 +19,7 @@ r_packages:
   - data.table
   - mltools
   - summarytools
+  - cvAUC
 
 apt_packages:
   - libgdal-dev
