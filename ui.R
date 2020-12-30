@@ -59,11 +59,24 @@ ui <- dashboardPage(
                
                box(
                   
-                  title       = "Choose a Variable",
+                  title       = "Exploratory Data Analysis",
                   status      = "primary",
                   solidHeader = FALSE,
                   width       = 4,
-                  uiOutput("colnames_select_input")
+                  
+                  uiOutput("colnames_select_input"),
+                  
+                  conditionalPanel(
+                     
+                     condition = "input.variable_name == '---'",
+                     
+                     radioButtons(
+                        "dataset_version", 
+                        "Dataset Version:",
+                        c("Raw Dataset" = "raw", "Pre-Processed Dataset" = "clean")
+                     )
+                     
+                  ),
                   
                ),
                

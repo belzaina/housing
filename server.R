@@ -2,14 +2,22 @@ library(readxl)
 library(magrittr)
 
 
-housing_dataset <- readxl::read_excel('data/hmeq.xls', sheet = 'hmeq')
+source("scripts/prepare_housing_dataset.R")
 
-n_rows <- nrow(housing_dataset)
 
-n_cols <- ncol(housing_dataset)
+raw_housing_dataset   <- readxl::read_excel('data/hmeq.xls', sheet = 'hmeq')
+clean_housing_dataset <- prepare_housing_dataset(raw_housing_dataset)
 
-missing_values <- round(
-   100 * sum(is.na(housing_dataset)) / (n_rows * n_cols), 
+n_rows <- nrow(raw_housing_dataset)
+n_cols <- ncol(raw_housing_dataset)
+
+missing_values_raw <- round(
+   100 * sum(is.na(raw_housing_dataset)) / (n_rows * n_cols), 
+   2
+)
+
+missing_values_clean <- round(
+   100 * sum(is.na(clean_housing_dataset)) / (n_rows * n_cols), 
    2
 )
 
@@ -19,16 +27,19 @@ server <- function(input, output) {
    output$n_rows <- renderText(n_rows)
    output$n_cols <- renderText(n_cols)
    
-   output$missing_values <- renderText(missing_values)
+   output$missing_values <- renderText(
+      if (input$dataset_version == "clean") missing_values_clean else missing_values_raw
+   )
    
    output$colnames_select_input <- renderUI(
       selectInput("variable_name", 
                   "Please choose a variable:", 
-                  c('---', sort(colnames(housing_dataset), decreasing = TRUE)))
+                  c('---', sort(colnames(raw_housing_dataset), decreasing = TRUE)))
    )
    
    output$housing_datatable <- renderDataTable(
-      housing_dataset,
+      (if (input$dataset_version == "raw") raw_housing_dataset else clean_housing_dataset) %>%
+         dplyr::mutate_if(is.numeric, round, 2),
       options = list(scrollX = TRUE)
    )
    
@@ -43,7 +54,7 @@ server <- function(input, output) {
             dfSummary.varnumbers = FALSE
          )
          
-         univ_summary <- housing_dataset %>%
+         univ_summary <- clean_housing_dataset %>%
             dplyr::select(input$variable_name) %>%
             summarytools::dfSummary()
          
@@ -51,7 +62,7 @@ server <- function(input, output) {
          
          univ_summary %<>% print(method = "render")
          
-         bivar_summary <- housing_dataset %>%
+         bivar_summary <- clean_housing_dataset %>%
             dplyr::select(input$variable_name, BAD) %>%
             dplyr::group_by(BAD) %>%
             summarytools::dfSummary()

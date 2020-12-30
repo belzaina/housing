@@ -12,22 +12,20 @@ mode_stat <- function(vect) {
 }
 
 
-#' Read and clean the housing dataset
-#' Input : path to the housing dataset file
-#' Output: dataframe
-prepare_housing_dataset <- function(path_xls = './data/hmeq.xls') {
-   
-   # Read Excel File
-   housing_dataset <- readxl::read_excel(path = path_xls, sheet = 'hmeq')
+#' Clean the housing dataset
+#' Input : raw housing dataframe
+#' Output: preprocessed dataframe
+prepare_housing_dataset <- function(raw_housing_dataframe) {
    
    # Qualitative Explanatory Variables: REASON, JOB
    # Replace Missing Values with the Mode
-   housing_dataset %<>% tidyr::replace_na(
-      list(
-         REASON = mode_stat(.$REASON),
-         JOB = mode_stat(.$JOB)
+   housing_dataset <- raw_housing_dataframe %>% 
+      tidyr::replace_na(
+         list(
+            REASON = mode_stat(.$REASON),
+            JOB = mode_stat(.$JOB)
+         )
       )
-   )
    
    # Quantitative Explanatory Variables
    # Replace Missing Values with the Mean
@@ -37,14 +35,6 @@ prepare_housing_dataset <- function(path_xls = './data/hmeq.xls') {
    )
    
    # Encode Qualitative Explanatory Variables: REASON, JOB
-   # housing_dataset %<>%
-   #    data.table::as.data.table() %>%
-   #    dplyr::mutate(
-   #       JOB = as.factor(JOB),
-   #       REASON = as.factor(REASON)
-   #    ) %>%
-   #    mltools::one_hot(cols = c("JOB", "REASON")) %>%
-   #    dplyr::as_tibble()
    housing_dataset %<>% dplyr::mutate(
       JOB    = as.factor(JOB),
       REASON = as.factor(REASON)

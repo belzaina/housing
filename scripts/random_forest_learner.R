@@ -1,10 +1,10 @@
 #' Run Random Forest Algorithm
 #' Inputs : Training DataFrame, Testing DataFrame
 #' Outputs: Predicted_Y_Test_Prob, Predicted_Y_Test_Class
-random_forest <- function(train_dataframe, test_dataframe, max_ntree = 200, random_seed = 88) {
+random_forest_learner <- function(train_dataframe, test_dataframe, max_ntree = 200, random_seed = 88) {
    
    y_train <- train_dataframe$BAD
-   prior_prob <- (table(y_train) / length(y_train)) %>% as.numeric()
+   prior_prob <- (table(y_train) / length(y_train))
    
    # set the seed
    set.seed(random_seed)
@@ -31,7 +31,7 @@ random_forest <- function(train_dataframe, test_dataframe, max_ntree = 200, rand
    
    # Predictions
    list(
-      Predicted_Y_Test_Prob  = predict(model_1, test_dataframe, type = "prob")[, 2] %>% as.numeric(),
+      Predicted_Y_Test_Prob  = predict(model_1, test_dataframe, type = "prob")[, "1"] %>% as.numeric(),
       Predicted_Y_Test_Class = predict(model_1, test_dataframe) %>% as.character() %>% as.numeric()
    )
    

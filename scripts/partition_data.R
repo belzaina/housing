@@ -4,7 +4,7 @@ library(magrittr)
 #' Partition Housing Dataset: N x 2-fold cross-validation of Dietterich (1998)
 #' Input : Dataframe, N, Random Seed
 #' Output: List of N list. Each sublist contains 2 dataframes (2-fold)
-partition_data <- function(housing_dataframe, N, random_seed = 88888) {
+partition_data <- function(housing_dataframe, N = 5, random_seed = 88) {
    
    n_row <- nrow(housing_dataframe)
    

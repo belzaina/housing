@@ -1,48 +1,56 @@
 library(magrittr)
 
 
-source('scripts/prepare_housing_dataset.R')
-source('scripts/partition_data.R')
-source('scripts/random_forest.R')
-source('scripts/compute_evaluation_criteria.R')
+source("scripts/prepare_housing_dataset.R")
+source("scripts/partition_data.R")
+source("scripts/compute_evaluation_criteria.R")
+source("scripts/random_forest_learner.R")
+source("scripts/svm_learner.R")
+source("scripts/logistic_learner.R")
+source("scripts/cross_validate.R")
 
 
-housing_dataframe <- prepare_housing_dataset()
+partitions <- prepare_housing_dataset() %>%
+   partition_data(N = 10)
 
-partitions <- partition_data(housing_dataframe, N = 5)
 
-random_forest_results <- partitions %>%
-   purrr::map_df(
-      
-      function(data_partition) {
-         
-         # STEP 1:
-         # Train on Fold1 and Test on Fold2
-         predictions_test_1 <- random_forest(
-            train_dataframe = data_partition[['Fold1']],
-            test_dataframe  = data_partition[['Fold2']]
-         )
-         eval_metrics_1 <- compute_evaluation_criteria(
-            y_true            = data_partition[['Fold2']]$BAD %>% as.character() %>% as.numeric(),
-            predicted_y_prob  = predictions_test_1[['Predicted_Y_Test_Prob']],
-            predicted_y_class = predictions_test_1[['Predicted_Y_Test_Class']]
-         )
-         
-         # STEP 2:
-         # Train on Fold2 and Test on Fold1
-         y_test_2 <- random_forest(
-            train_dataframe = data_partition[['Fold2']],
-            test_dataframe  = data_partition[['Fold1']]
-         )
-         eval_metrics_2 <- compute_evaluation_criteria(
-            y_true            = data_partition[['Fold1']]$BAD %>% as.character() %>% as.numeric(),
-            predicted_y_prob  = y_test_2[['Predicted_Y_Test_Prob']],
-            predicted_y_class = y_test_2[['Predicted_Y_Test_Class']]
-         )
-         
-         # rbind
-         dplyr::bind_rows(eval_metrics_1, eval_metrics_2)
-         
-      }
-      
-   )
+simulation_1 <- partitions %>%
+   cross_validate(random_forest_learner, compute_evaluation_criteria, random_seed = 88)
+
+simulation_2 <- partitions %>%
+   cross_validate(v, compute_evaluation_criteria, random_seed = 10)
+
+simulation_3 <- partitions %>%
+   cross_validate(random_forest_learner, compute_evaluation_criteria, random_seed = 8888, max_ntree = 500)
+
+simulation_4 <- partitions %>%
+   cross_validate(random_forest_learner, compute_evaluation_criteria, max_ntree = 500, random_seed = 1000)
+
+simulation_5 <- partitions %>%
+   cross_validate(random_forest_learner, compute_evaluation_criteria, random_seed = 88)
+
+simulation_6 <- partitions %>%
+   cross_validate(svm_learner, compute_evaluation_criteria)
+
+simulation_7 <- partitions %>%
+   cross_validate(svm_learner, compute_evaluation_criteria, kernel = 'polynomial')
+
+# same as simulation_6
+simulation_8 <- partitions %>%
+   cross_validate(svm_learner, compute_evaluation_criteria, kernel = 'radial')
+
+simulation_9 <- partitions %>%
+   cross_validate(logistic_learner, compute_evaluation_criteria)
+
+
+
+
+
+
+
+
+
+
+
+
+

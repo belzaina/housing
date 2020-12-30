@@ -20,6 +20,8 @@ r_packages:
   - mltools
   - summarytools
   - ROCR
+  - purrr
+  - e1071
 
 apt_packages:
   - libgdal-dev
