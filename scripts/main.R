@@ -95,7 +95,9 @@ rpart.plot::rpart.plot(fit)
 extract_rules(fit, format = FALSE)
 
 party_obj <- partykit::as.party.rpart(fit)
-party_obj
+
+
+
 rule_3_name <- partykit:::.list.rules.party(party_obj)["3"]
 rule_4_name <- partykit:::.list.rules.party(party_obj)["4"]
 rule_5_name <- partykit:::.list.rules.party(party_obj)["6"] %>%
