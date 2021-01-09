@@ -1,34 +1,36 @@
-library(readxl)
+library(shiny)
+library(shinydashboard)
 library(magrittr)
 
 
-source("scripts/prepare_housing_dataset.R")
+source("scripts/rules_utilities.R")
 
-
-raw_housing_dataset   <- readxl::read_excel('data/hmeq.xls', sheet = 'hmeq')
-clean_housing_dataset <- prepare_housing_dataset(raw_housing_dataset)
-
-n_rows <- nrow(raw_housing_dataset)
-n_cols <- ncol(raw_housing_dataset)
-
-missing_values_raw <- round(
-   100 * sum(is.na(raw_housing_dataset)) / (n_rows * n_cols), 
-   2
-)
-
-missing_values_clean <- round(
-   100 * sum(is.na(clean_housing_dataset)) / (n_rows * n_cols), 
-   2
-)
+# Pre-computed Variable to save computation power
+source("scripts/precomputed_variables.R")
 
 
 server <- function(input, output) {
    
    output$n_rows <- renderText(n_rows)
-   output$n_cols <- renderText(n_cols)
+   
+   output$n_cols <- renderText(
+      if (input$dataset_version == "raw") {
+         n_cols_raw
+      }  else if (input$dataset_version == "clean") {
+         n_cols_clean
+      } else {
+         n_cols_iqt
+      }
+   )
    
    output$missing_values <- renderText(
-      if (input$dataset_version == "clean") missing_values_clean else missing_values_raw
+      if (input$dataset_version == "raw") {
+         missing_values_raw
+      }  else if (input$dataset_version == "clean") {
+         missing_values_clean
+      } else {
+         missing_values_iqt
+      }
    )
    
    output$colnames_select_input <- renderUI(
@@ -37,8 +39,22 @@ server <- function(input, output) {
                   c('---', sort(colnames(raw_housing_dataset), decreasing = TRUE)))
    )
    
+   output$selected_var <- renderText(
+      input$variable_name
+   )
+   
    output$housing_datatable <- renderDataTable(
-      (if (input$dataset_version == "raw") raw_housing_dataset else clean_housing_dataset) %>%
+      (
+         
+         if (input$dataset_version == "raw") {
+            raw_housing_dataset 
+         } else if (input$dataset_version == "clean") {
+            clean_housing_dataset
+         } else {
+            clean_with_interaction_quadratic
+         }
+         
+      ) %>%
          dplyr::mutate_if(is.numeric, round, 2),
       options = list(scrollX = TRUE)
    )
@@ -54,7 +70,7 @@ server <- function(input, output) {
             dfSummary.varnumbers = FALSE
          )
          
-         univ_summary <- clean_housing_dataset %>%
+         univ_summary <- clean_housing_dataset_eda %>%
             dplyr::select(input$variable_name) %>%
             summarytools::dfSummary()
          
@@ -62,7 +78,7 @@ server <- function(input, output) {
          
          univ_summary %<>% print(method = "render")
          
-         bivar_summary <- clean_housing_dataset %>%
+         bivar_summary <- clean_housing_dataset_eda %>%
             dplyr::select(input$variable_name, BAD) %>%
             dplyr::group_by(BAD) %>%
             summarytools::dfSummary()
@@ -102,4 +118,173 @@ server <- function(input, output) {
       
    })
    
+   output$predictors_set <- renderUI(
+      
+      selectInput(
+         
+         "predictors_set",
+         
+         NULL,
+         
+         multiple = TRUE,
+         
+         selected = predictors_set,
+         
+         choices = predictors_set
+         
+      )
+      
+   )
+   
+   two_split_tree <- reactive({
+      
+      features <- input$predictors_set
+      
+      if (!is.null(features)) {
+         
+         rpart::rpart(
+            BAD ~ .,
+            data = clean_housing_dataset %>% dplyr::select(dplyr::all_of(c("BAD", features))),
+            control = list(maxdepth = 2, cp = -1),
+            model = TRUE
+         )         
+         
+      }
+      
+   })
+   
+   output$two_split_tree <- renderPlot({
+      
+      tree <- two_split_tree()
+      
+      if (!is.null(tree)) rpart.plot::rpart.plot(tree)
+      
+   })
+   
+   output$extracted_rules <- renderUI({
+      
+      tree <- two_split_tree()
+      
+      if (!is.null(tree)) {
+         
+         rules_list <- extract_rules(tree, format = FALSE)
+         
+         rules_list %>% lapply(
+            
+            function(rule) {
+               
+               tags$li(rule[["rule_name"]] %>% stringr::str_replace_all("_", " "))
+               
+            }
+            
+         )
+         
+      }
+      
+   })
+   
+   model_results <- eventReactive(input$train_model, {
+      
+      showModal(modalDialog("Training & Testing the model...", footer = NULL))
+      
+      # Prepare Train & Test Sets
+      n_train   <- round(n_rows * input$fraction_train)
+      i_train   <- sample(1:n_rows, size = n_train)
+      train_set <- clean_housing_dataset[i_train, ]
+      test_set  <- clean_housing_dataset[-i_train, ]
+      
+      results <- pltr_learner(train_set, test_set, predictors_pairs)
+      
+      eval_metrics <- compute_evaluation_criteria(
+         test_set$BAD %>% as.character() %>% as.numeric(), 
+         results[['Predicted_Y_Test_Prob']], 
+         results[['Predicted_Y_Test_Class']]
+      )
+      
+      removeModal()
+      
+      eval_metrics
+      
+   })
+   
+   output$eval_metrics <- renderUI({
+      
+      eval_metrics <- model_results() %>% round(4)
+      
+      fluidRow(
+         
+         valueBox(
+            
+            value    = eval_metrics$AUC,
+            subtitle = "AUC",
+            icon     = icon("chart-area"),
+            width    = 4,
+            color    = "blue"
+            
+         ),
+         
+         valueBox(
+            
+            value    = eval_metrics$GINI,
+            subtitle = "GINI",
+            icon     = icon("goodreads-g"),
+            width    = 4,
+            color    = "blue"
+            
+         ),
+         
+         valueBox(
+            
+            value    = eval_metrics$PCC,
+            subtitle = "PCC",
+            icon     = icon("product-hunt"),
+            width    = 4,
+            color    = "blue"
+            
+         ),
+         
+         valueBox(
+            
+            value    = eval_metrics$BS,
+            subtitle = "BS",
+            icon     = icon("bold"),
+            width    = 6,
+            color    = "blue"
+            
+         ),
+         
+         valueBox(
+            
+            value    = eval_metrics$KS,
+            subtitle = "KS",
+            icon     = icon("kickstarter-k"),
+            width    = 6,
+            color    = "blue"
+            
+         ),
+         
+      )
+      
+   })
+   
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

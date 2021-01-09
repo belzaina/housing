@@ -1,84 +1,99 @@
-#' Run SVM Algorithm
-#' Inputs : 
-#'    - Training DataFrame
-#'    - Testing DataFrame
-#'    - ... (extra argument to be passed to lasso function, e.g. kernel...)
-#' Outputs: Predicted_Y_Test_Prob, Predicted_Y_Test_Class
-pltr_learner <- function(train_dataframe, test_dataframe, ...) {
+library(magrittr)
+
+source("scripts/rules_utilities.R")
+
+
+pltr_learner <- function(train_dataframe, test_dataframe, predictors_pairs) {
    
-   # New dataframes
-   extended_train_dataframe <- dplyr::tibble() %>% rbind(train_dataframe)
-   extended_test_dataframe <- dplyr::tibble() %>% rbind(test_dataframe)
-   
-   # Get Features Names
-   explanatory_variables <- colnames(train_dataframe) %>%
-      purrr::keep(function(s) s != "BAD")
-   
-   # Generate a list of unique couples of features
-   features_couples <- explanatory_variables %>%
-      combn(m = 2) %>%
-      purrr::array_branch(margin = 2)
-   
-   # Learn two-split tree for each couple
-   for (couple in features_couples) {
+   for (pair in predictors_pairs) {
       
-      train_subset <- train_dataframe %>%
-         dplyr::select(c("BAD", dplyr::all_of(couple)))
+      # Learn only from a pair at a time
+      train_subset <- train_dataframe %>% 
+         dplyr::select("BAD", dplyr::all_of(pair))
       
-      test_subset <- test_dataframe %>%
-         dplyr::select(c("BAD", dplyr::all_of(couple)))
-      
-      two_split_tree <- rpart::rpart(
+      tree_model <- rpart::rpart(
          BAD ~ .,
          data = train_subset,
+         model = TRUE,
          control = list(maxdepth = 2, cp = -1)
       )
       
-      party_obj <- partykit::as.party.rpart(two_split_tree)
+      rules_list <- extract_rules(tree_model)
       
-      # Extract rules names
-      node_3_rule <- partykit:::.list.rules.party(party_obj)["3"]
-      node_4_rule <- partykit:::.list.rules.party(party_obj)["4"]
-      node_5_rule <- partykit:::.list.rules.party(party_obj)["6"] %>%
-         stringr::str_split(" & ") %>%
-         unlist() %>%
-         .[1]
-      
-      # Create dummy variables based on extracted rules
-      extended_train_dataframe %<>%
-         dplyr::mutate(
-            "{node_3_rule}" := (partykit::predict.party(party_obj, type = "node") == 3) %>% as.numeric(),
-            "{node_4_rule}" := (partykit::predict.party(party_obj, type = "node") == 4) %>% as.numeric(),
-            "{node_5_rule}" := (partykit::predict.party(party_obj, type = "node") > 5) %>% as.numeric()
+      for (rule in rules_list) {
+         
+         train_predicted_nodes <- rpart.plot::rpart.predict(tree_model, nn = TRUE)$nn
+         test_predicted_nodes  <- rpart.plot::rpart.predict(tree_model, 
+                                                            newdata = test_dataframe,
+                                                            nn = TRUE)$nn
+         
+         train_dataframe %<>% dplyr::mutate(
+            
+            "{rule[['rule_name']]}" := as.numeric(train_predicted_nodes == rule[['node_number']])
+            
          )
-      
-      extended_test_dataframe %<>%
-         dplyr::mutate(
-            "{node_3_rule}" := (partykit::predict.party(party_obj, 
-                                                        newdata = test_subset, 
-                                                        type = "node") == 3) %>% as.numeric(),
-            "{node_4_rule}" := (partykit::predict.party(party_obj, 
-                                                        newdata = test_subset,
-                                                        type = "node") == 4) %>% as.numeric(),
-            "{node_5_rule}" := (partykit::predict.party(party_obj, 
-                                                        newdata = test_subset,
-                                                        type = "node") > 5) %>% as.numeric()
+         
+         test_dataframe %<>% dplyr::mutate(
+            
+            "{rule[['rule_name']]}" := as.numeric(test_predicted_nodes == rule[['node_number']])
+            
          )
+         
+      }
       
    }
    
    # Remove duplicated rules
-   extended_train_dataframe %<>% .[!duplicated(as.list(.))]
-   extended_test_dataframe %<>% dplyr::select(
-      dplyr::all_of(colnames(extended_train_dataframe))
+   train_dataframe %<>% .[!duplicated(as.list(.))]
+   test_dataframe  %<>% dplyr::select(
+      dplyr::all_of(colnames(train_dataframe))
    )
    
-   # Cross validate LASSO
+   # CV (10-fold) Ridge to Get the LASSO Penalty Factor
+   ridge_cv <- glmnet::cv.glmnet(
+      x = train_dataframe %>% dplyr::select(-BAD) %>% data.matrix(),
+      y = train_dataframe$BAD,
+      family = "binomial",
+      type.measure = "auc",
+      nfolds = 10,
+      alpha = 0,
+   )
+   
+   # -1 to exclude the intercept
+   best_ridge_coef <- as.numeric(coef(ridge_cv, s = ridge_cv$lambda.min))[-1]
+   
+   # CV (10-fold) Adaptive LASSO
+   ada_lasso <- glmnet::cv.glmnet(
+      x = train_dataframe %>% dplyr::select(-BAD) %>% data.matrix(),
+      y = train_dataframe$BAD,
+      family = "binomial",
+      type.measure = "auc",
+      nfolds = 10,
+      alpha = 1,
+      penalty.factor = 1 / abs(best_ridge_coef)
+   )
    
    # Predict on test set
+   predicted_test_class <- predict(
+      ada_lasso, 
+      newx = test_dataframe %>% dplyr::select(-BAD) %>% data.matrix(), 
+      s = "lambda.min", 
+      type = "class"
+   ) %>% as.numeric()
+   
+   predicted_test_prob <- predict(
+      ada_lasso, 
+      newx = test_dataframe %>% dplyr::select(-BAD) %>% data.matrix(), 
+      s = "lambda.min", 
+      type = "response"
+   ) %>% as.numeric()
+   
+   list(
+      Predicted_Y_Test_Prob  = predicted_test_prob,
+      Predicted_Y_Test_Class = predicted_test_class
+   )
    
 }
-
 
 
 

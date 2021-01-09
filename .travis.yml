@@ -22,6 +22,12 @@ r_packages:
   - ROCR
   - purrr
   - e1071
+  - stringr
+  - rpart
+  - rpart.plot
+  - glmnet
+  - randomForest
+  - fastDummies
 
 apt_packages:
   - libgdal-dev

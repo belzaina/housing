@@ -13,9 +13,11 @@ mode_stat <- function(vect) {
 
 
 #' Clean the housing dataset
-#' Input : raw housing dataframe
+#' Input : 
+#'    - raw housing dataframe
+#'    - whether to convert qualitative predictors to dummy or not
 #' Output: preprocessed dataframe
-prepare_housing_dataset <- function(raw_housing_dataframe) {
+prepare_housing_dataset <- function(raw_housing_dataframe, to_dummy = TRUE) {
    
    # Qualitative Explanatory Variables: REASON, JOB
    # Replace Missing Values with the Mode
@@ -35,10 +37,22 @@ prepare_housing_dataset <- function(raw_housing_dataframe) {
    )
    
    # Encode Qualitative Explanatory Variables: REASON, JOB
-   housing_dataset %<>% dplyr::mutate(
-      JOB    = as.factor(JOB),
-      REASON = as.factor(REASON)
-   )
+   if (to_dummy) {
+      
+      housing_dataset %<>% fastDummies::dummy_columns(select_columns = c("JOB", "REASON"), 
+                                                      remove_selected_columns = TRUE)
+      
+   } else {
+      
+      housing_dataset %<>% dplyr::mutate(
+         
+         JOB = as.factor(JOB),
+         
+         REASON = as.factor(REASON)
+         
+      )
+      
+   }
    
    # Encode the Dependent Variable as a Factor
    housing_dataset %<>% dplyr::mutate(
@@ -49,3 +63,24 @@ prepare_housing_dataset <- function(raw_housing_dataframe) {
    housing_dataset
    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

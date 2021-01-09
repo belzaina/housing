@@ -11,11 +11,16 @@ library(magrittr)
 
 cross_validate <- function(cv_partitions, learner, evaluator, ...) {
    
+   N <- 1
+   
    cv_partitions %>%
       
       purrr::map_df(
          
          function(data_partition) {
+            
+            print(paste("Processing N =", N))
+            N <<- N + 1
             
             # STEP 1:
             # Train on Fold1 and Test on Fold2

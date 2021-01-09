@@ -7,19 +7,29 @@ source("scripts/compute_evaluation_criteria.R")
 source("scripts/random_forest_learner.R")
 source("scripts/svm_learner.R")
 source("scripts/logistic_learner.R")
+source("scripts/penalized_learner.R")
+source("scripts/pltr_learner.R")
 source("scripts/cross_validate.R")
+source("scripts/rules_utilities.R")
 
 raw_housing_dataframe <- readxl::read_excel("./data/hmeq.xls")
 
 partitions <- prepare_housing_dataset(raw_housing_dataframe) %>%
-   partition_data(N = 10)
+   partition_data(N = 5)
+
+features_pairs <- colnames(partitions$N1$Fold1) %>% tail(n = -1) %>%
+   combn(m = 2) %>%
+   purrr::array_branch(margin = 2)
+
+simulation_0 <- partitions %>%
+   cross_validate(pltr, compute_evaluation_criteria, predictors_pairs = features_pairs)
 
 
 simulation_1 <- partitions %>%
    cross_validate(random_forest_learner, compute_evaluation_criteria, random_seed = 88)
 
 simulation_2 <- partitions %>%
-   cross_validate(v, compute_evaluation_criteria, random_seed = 10)
+   cross_validate(random_forest_learner, compute_evaluation_criteria, random_seed = 10)
 
 simulation_3 <- partitions %>%
    cross_validate(random_forest_learner, compute_evaluation_criteria, random_seed = 8888, max_ntree = 500)
@@ -43,13 +53,46 @@ simulation_8 <- partitions %>%
 simulation_9 <- partitions %>%
    cross_validate(logistic_learner, compute_evaluation_criteria)
 
+simulation_10 <- partitions %>%
+   cross_validate(pltr_learner, compute_evaluation_criteria)
+
+
+partitions_1 <- prepare_housing_dataset(raw_housing_dataframe) %>%
+   partition_data(N = 1)
+
+simulation_11 <- partitions %>%
+   cross_validate(pltr_learner, compute_evaluation_criteria)
+
+simulation_12 <- partitions %>%
+   cross_validate(pltr_learner, compute_evaluation_criteria)
+
+simulation_13 <- partitions %>%
+   cross_validate(pltr_learner, compute_evaluation_criteria)
+
+# LASSO
+simulation_14 <- partitions %>%
+   cross_validate(penalized_learner, compute_evaluation_criteria, penalty = 1)
+
+# RIDGE
+simulation_15 <- partitions %>%
+   cross_validate(penalized_learner, compute_evaluation_criteria, penalty = 0)
+
+# LASSO NL
+simulation_16 <- partitions %>%
+   cross_validate(penalized_learner, compute_evaluation_criteria, penalty = 1)
+
 
 housing_dataset <- prepare_housing_dataset(raw_housing_dataframe)
 
 fit <- rpart::rpart(BAD ~ .,
-                    data = housing_dataset,
+                    data = housing_dataset[, c('BAD', 'JOB_Office', 'JOB_ProfExe', 'JOB_Sales')],
                     control = list(maxdepth=2, cp = -1)
 )
+
+rpart.plot::rpart.rules(fit, nn = TRUE)
+rpart.plot::rpart.plot(fit)
+
+extract_rules(fit, format = FALSE)
 
 party_obj <- partykit::as.party.rpart(fit)
 party_obj
