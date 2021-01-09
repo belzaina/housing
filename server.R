@@ -4,6 +4,8 @@ library(magrittr)
 
 
 source("scripts/rules_utilities.R")
+source("scripts/compute_evaluation_criteria.R")
+source("scripts/pltr_learner.R")
 
 # Pre-computed Variable to save computation power
 source("scripts/precomputed_variables.R")
@@ -56,7 +58,11 @@ server <- function(input, output) {
          
       ) %>%
          dplyr::mutate_if(is.numeric, round, 2),
-      options = list(scrollX = TRUE)
+      filter = "none",
+      options = list(
+         scrollX = TRUE, 
+         pageLength = 10
+      )
    )
    
    output$summary_stats <- shiny::renderUI({
