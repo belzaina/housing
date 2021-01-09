@@ -275,7 +275,7 @@ ui <- dashboardPage(
                      status      = "primary",
                      solidHeader = TRUE,
                      width       = 8,
-                     dataTableOutput("housing_datatable")
+                     DT::dataTableOutput("housing_datatable")
                      
                   ),
                   

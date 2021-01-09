@@ -45,7 +45,7 @@ server <- function(input, output) {
       input$variable_name
    )
    
-   output$housing_datatable <- renderDataTable(
+   output$housing_datatable <- DT::renderDataTable(
       (
          
          if (input$dataset_version == "raw") {
@@ -58,7 +58,6 @@ server <- function(input, output) {
          
       ) %>%
          dplyr::mutate_if(is.numeric, round, 2),
-      filter = "none",
       options = list(
          scrollX = TRUE, 
          pageLength = 10
