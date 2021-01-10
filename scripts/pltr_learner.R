@@ -5,6 +5,8 @@ source("scripts/rules_utilities.R")
 
 pltr_learner <- function(train_dataframe, test_dataframe, predictors_pairs) {
    
+   n_predictors <- ncol(train_dataframe) - 1 
+   
    for (pair in predictors_pairs) {
       
       # Learn only from a pair at a time
@@ -49,6 +51,9 @@ pltr_learner <- function(train_dataframe, test_dataframe, predictors_pairs) {
       dplyr::all_of(colnames(train_dataframe))
    )
    
+   # Count number of rules
+   rules_count <- ncol(train_dataframe) - 1 - n_predictors
+   
    # CV (10-fold) Ridge to Get the LASSO Penalty Factor
    ridge_cv <- glmnet::cv.glmnet(
       x = train_dataframe %>% dplyr::select(-BAD) %>% data.matrix(),
@@ -73,6 +78,21 @@ pltr_learner <- function(train_dataframe, test_dataframe, predictors_pairs) {
       penalty.factor = 1 / abs(best_ridge_coef)
    )
    
+   # coef_ranks
+   cs <- as.matrix(coef(ada_lasso, s = "lambda.min"))
+   coef_ranks <- cs[-1, 1]
+   
+   predictors_names <- names(coef_ranks) %>%
+      purrr::map_chr(pretty_print_rule)
+   
+   coef_ranks <- dplyr::tibble(
+      Predictor = predictors_names,
+      Coefficient = coef_ranks,
+      Coefficient_Magnitude = abs(coef_ranks)
+   ) %>% dplyr::arrange(
+      dplyr::desc(Coefficient_Magnitude)
+   )
+   
    # Predict on test set
    predicted_test_class <- predict(
       ada_lasso, 
@@ -90,7 +110,9 @@ pltr_learner <- function(train_dataframe, test_dataframe, predictors_pairs) {
    
    list(
       Predicted_Y_Test_Prob  = predicted_test_prob,
-      Predicted_Y_Test_Class = predicted_test_class
+      Predicted_Y_Test_Class = predicted_test_class,
+      count_extracted_rules  = rules_count,
+      coef_ranks             = coef_ranks
    )
    
 }

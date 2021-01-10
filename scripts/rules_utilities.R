@@ -13,6 +13,18 @@ format_rule <- function(s) {
    
 }
 
+pretty_print_rule <- function(s) {
+   
+   s %<>% stringr::str_replace_all("_GTE_", " >= ")
+   s %<>% stringr::str_replace_all("_LTE_", " <= ")
+   s %<>% stringr::str_replace_all("_GT_", " > ")
+   s %<>% stringr::str_replace_all("_LT_", " < ")
+   s %<>% stringr::str_replace_all("_", " ")
+   
+   s
+   
+}
+
 
 extract_rules <- function(rpart_model, format = TRUE) {
    

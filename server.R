@@ -1,5 +1,6 @@
 library(shiny)
 library(shinydashboard)
+library(ggplot2)
 library(magrittr)
 
 
@@ -190,9 +191,10 @@ server <- function(input, output) {
    
    model_results <- eventReactive(input$train_model, {
       
-      showModal(modalDialog("Training & Testing the model...", footer = NULL))
+      showModal(modalDialog("It takes a few seconds to train a good model...", footer = NULL))
       
       # Prepare Train & Test Sets
+      set.seed(input$seed)
       n_train   <- round(n_rows * input$fraction_train)
       i_train   <- sample(1:n_rows, size = n_train)
       train_set <- clean_housing_dataset[i_train, ]
@@ -208,68 +210,180 @@ server <- function(input, output) {
       
       removeModal()
       
-      eval_metrics
+      list(
+         
+         "eval_metrics" = eval_metrics,
+         
+         "count_extracted_rules" = results[["count_extracted_rules"]],
+         
+         "coef_ranks" = results[["coef_ranks"]]
+         
+      )
       
    })
    
    output$eval_metrics <- renderUI({
       
-      eval_metrics <- model_results() %>% round(4)
+      eval_metrics <- model_results()[["eval_metrics"]] %>% round(4)
       
       fluidRow(
          
-         valueBox(
+         box(
             
-            value    = eval_metrics$AUC,
-            subtitle = "AUC",
-            icon     = icon("chart-area"),
-            width    = 4,
-            color    = "blue"
+            title = "TEST SET RESULTS",
             
-         ),
-         
-         valueBox(
+            width = 12,
             
-            value    = eval_metrics$GINI,
-            subtitle = "GINI",
-            icon     = icon("goodreads-g"),
-            width    = 4,
-            color    = "blue"
+            valueBox(
+               
+               value    = eval_metrics$AUC,
+               subtitle = "Area under the ROC Curve (AUC)",
+               icon     = icon("chart-area"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
             
-         ),
-         
-         valueBox(
+            valueBox(
+               
+               value    = eval_metrics$GINI,
+               subtitle = "GINI",
+               icon     = icon("goodreads-g"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
             
-            value    = eval_metrics$PCC,
-            subtitle = "PCC",
-            icon     = icon("product-hunt"),
-            width    = 4,
-            color    = "blue"
+            valueBox(
+               
+               value    = eval_metrics$PCC,
+               subtitle = "Percent of Correct Classifcation (PCC)",
+               icon     = icon("product-hunt"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
             
-         ),
-         
-         valueBox(
+            valueBox(
+               
+               value    = eval_metrics$BS,
+               subtitle = "Brier Score (BS)",
+               icon     = icon("bold"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
             
-            value    = eval_metrics$BS,
-            subtitle = "BS",
-            icon     = icon("bold"),
-            width    = 6,
-            color    = "blue"
+            valueBox(
+               
+               value    = eval_metrics$KS,
+               subtitle = "Kolmogorov-Smirnov Statistic (KS)",
+               icon     = icon("kickstarter-k"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
             
-         ),
-         
-         valueBox(
+            valueBox(
+               
+               value    = model_results()[["count_extracted_rules"]],
+               subtitle = "New Rules Created",
+               icon     = icon("columns"),
+               width    = 4,
+               color    = "blue"
+               
+            )
             
-            value    = eval_metrics$KS,
-            subtitle = "KS",
-            icon     = icon("kickstarter-k"),
-            width    = 6,
-            color    = "blue"
-            
-         ),
+         )
          
       )
       
+   })
+   
+   output$var_imp <- renderUI({
+
+      coef_ranks <- model_results()[["coef_ranks"]] %>%
+         dplyr::mutate_if(is.numeric, round, 4)
+
+      div(
+         
+         fluidRow(
+            
+            box(
+               
+               title = "TOP-10 PREDICTORS",
+               
+               width = 6,
+               
+               renderPlot(
+                  
+                  coef_ranks %>%
+                     head(n = 10) %>%
+                     dplyr::mutate(
+                        
+                        Predictor = factor(Predictor, levels = Predictor[order(Coefficient_Magnitude)])
+                        
+                     ) %>%
+                     ggplot(aes(x = Predictor, y = Coefficient_Magnitude)) +
+                     geom_bar(stat = "identity", fill = "#f68060", alpha = .6, width = .4) +
+                     coord_flip() +
+                     xlab("") +
+                     ylab("COEFFICIENT MAGNITUDE") +
+                     theme_bw()
+                  
+               )
+               
+            ),
+            
+            box(
+               
+               title = "PREDICTORS IMPORTANCE - SORTED BY COEFFICIENTS MAGNITUDE",
+               
+               width = 6,
+               
+               height = "467px",
+               
+               br(),
+               
+               DT::renderDataTable(
+                  
+                  coef_ranks %>% dplyr::select(Predictor, Coefficient),
+                  
+                  class = "display nowrap",
+                  
+                  rownames= FALSE,
+                  
+                  options = list(
+                     
+                     scrollX = TRUE,
+                     pageLength = 5
+                     
+                  )
+                  
+               )
+               
+            )
+            
+         ),
+         
+         fluidRow(
+            
+            column(
+               
+               width = 12,
+               
+               align = "center",
+               
+               h3("TRAIN AGAIN?"),
+               
+               br()
+               
+            )
+            
+         )
+         
+      )
+
    })
    
 }

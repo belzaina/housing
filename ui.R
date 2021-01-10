@@ -307,74 +307,86 @@ ui <- dashboardPage(
             
             tabName = "models",
             
-            box(
+            fluidRow(
                
-               width = 12,
-               
-               tabsetPanel(
+               box(
                   
-                  tabPanel(
+                  width = 12,
+                  
+                  tabsetPanel(
                      
-                     title = "Penalized Logistic Tree Regression",
-                     
-                     br(),
-                     
-                     uiOutput("eval_metrics"),
-                     
-                     fluidRow(
+                     tabPanel(
                         
-                        column(
+                        title = "Penalized Logistic Tree Regression",
+                        
+                        br(),
+                        
+                        uiOutput("eval_metrics"),
+                        
+                        uiOutput("var_imp"),
+                        
+                        fluidRow(
                            
-                           offset = 3,
-                           
-                           width = 6,
-                           
-                           numericInput("seed", label = h4("Seed"), value = 8080, min = 1),
-                           
-                           sliderInput("fraction_train", label = h4("Fraction Used for Training"), 
-                                       min = 0.1, max = 0.9, value = 0.5, step = 0.1),
-                           
-                           br(),
-                           
-                           actionButton("train_model", h4("Train & Test"), width = '100%'),
-                           
-                           br(), br()
+                           column(
+                              
+                              offset = 3,
+                              
+                              width = 12,
+                              
+                              box(
+                                 
+                                 title = "TRAINING PARAMETERS",
+                                 
+                                 width = 6,
+                                 
+                                 numericInput("seed", label = h4("Seed"), value = 8081, min = 1),
+                                 
+                                 sliderInput("fraction_train", label = h4("Fraction Used for Training"), 
+                                             min = 0.1, max = 0.9, value = 0.5, step = 0.1),
+                                 
+                                 br(),
+                                 
+                                 actionButton("train_model", h4("Train & Test"), width = '100%')
+                                 
+                              )
+                              
+                           )
                            
                         )
                         
+                     ),
+                     
+                     tabPanel(
+                        
+                        title = "Random Forest",
+                        
+                        br(), br()
+                        
+                     ),
+                     
+                     tabPanel(
+                        
+                        title = "Support Vector Machine",
+                        
+                        br(), br()
+                        
+                     ),
+                     
+                     tabPanel(
+                        
+                        title = "Linear Logistic Regression",
+                        
+                        br(), br()
+                        
+                     ),
+                     
+                     tabPanel(
+                        
+                        title = "Non-Linear Logistic Regression",
+                        
+                        br(), br()
+                        
                      )
-                     
-                  ),
-                  
-                  tabPanel(
-                     
-                     title = "Random Forest",
-                     
-                     br(), br()
-                     
-                  ),
-                  
-                  tabPanel(
-                     
-                     title = "Support Vector Machine",
-                     
-                     br(), br()
-                     
-                  ),
-                  
-                  tabPanel(
-                     
-                     title = "Linear Logistic Regression",
-                     
-                     br(), br()
-                     
-                  ),
-                  
-                  tabPanel(
-                     
-                     title = "Non-Linear Logistic Regression",
-                     
-                     br(), br()
                      
                   )
                   
