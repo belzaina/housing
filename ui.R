@@ -321,9 +321,9 @@ ui <- dashboardPage(
                         
                         br(),
                         
-                        uiOutput("eval_metrics"),
+                        uiOutput("pltr_eval_metrics"),
                         
-                        uiOutput("var_imp"),
+                        uiOutput("pltr_var_imp"),
                         
                         fluidRow(
                            
@@ -339,14 +339,14 @@ ui <- dashboardPage(
                                  
                                  width = 6,
                                  
-                                 numericInput("seed", label = h4("Seed"), value = 8081, min = 1),
+                                 numericInput("pltr_seed", label = h4("Seed"), value = 8081, min = 1),
                                  
-                                 sliderInput("fraction_train", label = h4("Fraction Used for Training"), 
+                                 sliderInput("pltr_fraction_train", label = h4("Fraction Used for Training"), 
                                              min = 0.1, max = 0.9, value = 0.5, step = 0.1),
                                  
                                  br(),
                                  
-                                 actionButton("train_model", h4("Train & Test"), width = '100%')
+                                 actionButton("pltr_train_button", h4("Train & Test"), width = '100%')
                                  
                               )
                               
@@ -360,7 +360,47 @@ ui <- dashboardPage(
                         
                         title = "Random Forest",
                         
-                        br(), br()
+                        br(),
+                        
+                        uiOutput("rf_eval_metrics"),
+                        
+                        uiOutput("rf_var_imp"),
+                        
+                        fluidRow(
+                           
+                           column(
+                              
+                              offset = 3,
+                              
+                              width = 12,
+                              
+                              box(
+                                 
+                                 title = "TRAINING PARAMETERS",
+                                 
+                                 width = 6,
+                                 
+                                 numericInput("rf_seed", label = h4("Seed"), value = 8081, min = 1),
+                                 
+                                 sliderInput("rf_fraction_train", label = h4("Fraction Used for Training"), 
+                                             min = 0.1, max = 0.9, value = 0.5, step = 0.1),
+                                 
+                                 radioButtons(
+                                    "rf_var_imp_metric", 
+                                    h4("Variable Importance Measure"),
+                                    c("Mean Decrease in Accuracy" = 1, 
+                                      "Mean Decrease in Node Impurity" = 2)
+                                 ),
+                                 
+                                 br(),
+                                 
+                                 actionButton("rf_train_button", h4("Train & Test"), width = '100%')
+                                 
+                              )
+                              
+                           )
+                           
+                        )
                         
                      ),
                      
@@ -368,7 +408,45 @@ ui <- dashboardPage(
                         
                         title = "Support Vector Machine",
                         
-                        br(), br()
+                        br(),
+                        
+                        uiOutput("svm_eval_metrics"),
+                        
+                        fluidRow(
+                           
+                           column(
+                              
+                              offset = 3,
+                              
+                              width = 12,
+                              
+                              box(
+                                 
+                                 title = "TRAINING PARAMETERS",
+                                 
+                                 width = 6,
+                                 
+                                 numericInput("svm_seed", label = h4("Seed"), value = 8081, min = 1),
+                                 
+                                 sliderInput("svm_fraction_train", label = h4("Fraction Used for Training"), 
+                                             min = 0.1, max = 0.9, value = 0.5, step = 0.1),
+                                 
+                                 radioButtons(
+                                    "svm_kernel", 
+                                    h4("Kernel"),
+                                    c("Radial" = "radial", 
+                                      "Polynomial" = "polynomial")
+                                 ),
+                                 
+                                 br(),
+                                 
+                                 actionButton("svm_train_button", h4("Train & Test"), width = '100%')
+                                 
+                              )
+                              
+                           )
+                           
+                        )
                         
                      ),
                      
@@ -376,7 +454,49 @@ ui <- dashboardPage(
                         
                         title = "Linear Logistic Regression",
                         
-                        br(), br()
+                        br(),
+                        
+                        uiOutput("llr_eval_metrics"),
+                        
+                        uiOutput("llr_var_imp"),
+                        
+                        fluidRow(
+                           
+                           column(
+                              
+                              offset = 3,
+                              
+                              width = 12,
+                              
+                              box(
+                                 
+                                 title = "TRAINING PARAMETERS",
+                                 
+                                 width = 6,
+                                 
+                                 numericInput("llr_seed", label = h4("Seed"), value = 8081, min = 1),
+                                 
+                                 sliderInput("llr_fraction_train", label = h4("Fraction Used for Training"), 
+                                             min = 0.1, max = 0.9, value = 0.5, step = 0.1),
+                                 
+                                 radioButtons(
+                                    "llr_penalty", 
+                                    h4("Penalty"),
+                                    c("No Penalty"          = -1, 
+                                      "Ridge"               = 0,
+                                      "LASSO"               = 1,
+                                      "Adaptive LASSO"      = 2)
+                                 ),
+                                 
+                                 br(),
+                                 
+                                 actionButton("llr_train_button", h4("Train & Test"), width = '100%')
+                                 
+                              )
+                              
+                           )
+                           
+                        )
                         
                      ),
                      
@@ -384,7 +504,48 @@ ui <- dashboardPage(
                         
                         title = "Non-Linear Logistic Regression",
                         
-                        br(), br()
+                        br(),
+                        
+                        uiOutput("nllr_eval_metrics"),
+                        
+                        uiOutput("nllr_var_imp"),
+                        
+                        fluidRow(
+                           
+                           column(
+                              
+                              offset = 3,
+                              
+                              width = 12,
+                              
+                              box(
+                                 
+                                 title = "TRAINING PARAMETERS",
+                                 
+                                 width = 6,
+                                 
+                                 numericInput("nllr_seed", label = h4("Seed"), value = 8081, min = 1),
+                                 
+                                 sliderInput("nllr_fraction_train", label = h4("Fraction Used for Training"), 
+                                             min = 0.1, max = 0.9, value = 0.5, step = 0.1),
+                                 
+                                 radioButtons(
+                                    "nllr_penalty", 
+                                    h4("Penalty"),
+                                    c("Ridge"               = 0,
+                                      "LASSO"               = 1,
+                                      "Adaptive LASSO"      = 2)
+                                 ),
+                                 
+                                 br(),
+                                 
+                                 actionButton("nllr_train_button", h4("Train & Test"), width = '100%')
+                                 
+                              )
+                              
+                           )
+                           
+                        )
                         
                      )
                      
