@@ -344,6 +344,15 @@ ui <- dashboardPage(
                                  sliderInput("pltr_fraction_train", label = h4("Fraction Used for Training"), 
                                              min = 0.1, max = 0.9, value = 0.5, step = 0.1),
                                  
+                                 radioButtons(
+                                    "pltr_penalty", 
+                                    h4("Penalty"),
+                                    c("Adaptive LASSO"      = 2,
+                                      "LASSO"               = 1,
+                                      "Ridge"               = 0
+                                      )
+                                 ),
+                                 
                                  br(),
                                  
                                  actionButton("pltr_train_button", h4("Train & Test"), width = '100%')
@@ -560,6 +569,261 @@ ui <- dashboardPage(
          tabItem(
             
             tabName = "cv",
+            
+            fluidRow(
+               
+               box(
+                  
+                  width = 12,
+                  
+                  tabsetPanel(
+                     
+                     tabPanel(
+                        
+                        title = "Penalized Logistic Tree Regression",
+                        
+                        br(),
+                        
+                        uiOutput("pltr_cv_eval_metrics"),
+                        
+                        fluidRow(
+                           
+                           column(
+                              
+                              width = 6,
+                              
+                              box(
+                                 
+                                 title = "TRAINING PARAMETERS",
+                                 
+                                 width = 12,
+                                 
+                                 numericInput("pltr_cv_seed", label = h4("Seed"), value = 8081, min = 1),
+                                 
+                                 numericInput("pltr_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
+                                 
+                                 radioButtons(
+                                    "pltr_cv_penalty", 
+                                    h4("Penalty"),
+                                    c("Adaptive LASSO"      = 2,
+                                      "LASSO"               = 1,
+                                      "Ridge"               = 0
+                                    )
+                                 ),
+                                 
+                                 br(),
+                                 
+                                 actionButton("pltr_cv_button", h4("Cross Validate!"), width = '100%')
+                                 
+                              )
+                              
+                           ),
+                           
+                           column(
+                              
+                              width = 6,
+                              
+                              box(
+                                 
+                                 width = 12,
+                                 
+                                 height = "471.8px",
+                                 
+                                 title = "CROSS VALIDATION RESULTS",
+                                 
+                                 br(),
+                                 
+                                 DT::dataTableOutput("pltr_cv_dt")
+                                 
+                              )
+                              
+                           )
+                           
+                        )
+                        
+                     ),
+                     
+                     tabPanel(
+                        
+                        title = "Random Forest",
+                        
+                        br(),
+                        
+                        uiOutput("rf_cv_eval_metrics"),
+                        
+                        fluidRow(
+                           
+                           column(
+                              
+                              offset = 3,
+                              
+                              width = 12,
+                              
+                              box(
+                                 
+                                 title = "TRAINING PARAMETERS",
+                                 
+                                 width = 6,
+                                 
+                                 numericInput("rf_cv_seed", label = h4("Seed"), value = 8081, min = 1),
+                                 
+                                 numericInput("rf_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
+                                 
+                                 br(),
+                                 
+                                 actionButton("rf_cv_button", h4("Cross Validate!"), width = '100%')
+                                 
+                              )
+                              
+                           )
+                           
+                        )
+                        
+                     ),
+                     
+                     tabPanel(
+                        
+                        title = "Support Vector Machine",
+                        
+                        br(),
+                        
+                        uiOutput("svm_cv_eval_metrics"),
+                        
+                        fluidRow(
+                           
+                           column(
+                              
+                              offset = 3,
+                              
+                              width = 12,
+                              
+                              box(
+                                 
+                                 title = "TRAINING PARAMETERS",
+                                 
+                                 width = 6,
+                                 
+                                 numericInput("svm_cv_seed", label = h4("Seed"), value = 8081, min = 1),
+                                 
+                                 numericInput("svm_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
+                                 
+                                 radioButtons(
+                                    "svm_cv_kernel", 
+                                    h4("Kernel"),
+                                    c("Radial" = "radial", 
+                                      "Polynomial" = "polynomial")
+                                 ),
+                                 
+                                 br(),
+                                 
+                                 actionButton("svm_cv_button", h4("Cross Validate!"), width = '100%')
+                                 
+                              )
+                              
+                           )
+                           
+                        )
+                        
+                     ),
+                     
+                     tabPanel(
+                        
+                        title = "Linear Logistic Regression",
+                        
+                        br(),
+                        
+                        uiOutput("llr_cv_eval_metrics"),
+                        
+                        fluidRow(
+                           
+                           column(
+                              
+                              offset = 3,
+                              
+                              width = 12,
+                              
+                              box(
+                                 
+                                 title = "TRAINING PARAMETERS",
+                                 
+                                 width = 6,
+                                 
+                                 numericInput("llr_cv_seed", label = h4("Seed"), value = 8081, min = 1),
+                                 
+                                 numericInput("llr_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
+                                 
+                                 radioButtons(
+                                    "llr_cv_penalty", 
+                                    h4("Penalty"),
+                                    c("No Penalty"          = -1, 
+                                      "Ridge"               = 0,
+                                      "LASSO"               = 1,
+                                      "Adaptive LASSO"      = 2)
+                                 ),
+                                 
+                                 br(),
+                                 
+                                 actionButton("llr_cv_button", h4("Cross Validate!"), width = '100%')
+                                 
+                              )
+                              
+                           )
+                           
+                        )
+                        
+                     ),
+                     
+                     tabPanel(
+                        
+                        title = "Non-Linear Logistic Regression",
+                        
+                        br(),
+                        
+                        uiOutput("nllr_cv_eval_metrics"),
+                        
+                        fluidRow(
+                           
+                           column(
+                              
+                              offset = 3,
+                              
+                              width = 12,
+                              
+                              box(
+                                 
+                                 title = "TRAINING PARAMETERS",
+                                 
+                                 width = 6,
+                                 
+                                 numericInput("nllr_cv_seed", label = h4("Seed"), value = 8081, min = 1),
+                                 
+                                 numericInput("nllr_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
+                                 
+                                 radioButtons(
+                                    "nllr_cv_penalty", 
+                                    h4("Penalty"),
+                                    c("Ridge"               = 0,
+                                      "LASSO"               = 1,
+                                      "Adaptive LASSO"      = 2)
+                                 ),
+                                 
+                                 br(),
+                                 
+                                 actionButton("nllr_cv_button", h4("Cross Validate!"), width = '100%')
+                                 
+                              )
+                              
+                           )
+                           
+                        )
+                        
+                     )
+                     
+                  )
+                  
+               )
+               
+            )
             
          ),
          

@@ -4,6 +4,7 @@ library(ggplot2)
 library(magrittr)
 
 
+# Loading Scripts...
 source("scripts/rules_utilities.R")
 source("scripts/compute_evaluation_criteria.R")
 source("scripts/pltr_learner.R")
@@ -11,11 +12,26 @@ source("scripts/random_forest_learner.R")
 source("scripts/svm_learner.R")
 source("scripts/penalized_learner.R")
 source("scripts/logistic_learner.R")
-
+source("scripts/partition_data.R")
+source("scripts/cross_validate.R")
 
 # Pre-computed Variable to save computation power
 source("scripts/precomputed_variables.R")
 
+# Metadata
+source("data/metadata.R")
+
+# CV Reactive datatable
+pltr_cv_results_dt <- reactiveValues(
+   cv_results = dplyr::tibble(
+      Iteration = character(),
+      AUC       = numeric(),
+      GINI      = numeric(),
+      PCC       = numeric(),
+      BS        = numeric(),
+      KS        = numeric()
+   )
+)
 
 server <- function(input, output) {
    
@@ -196,7 +212,7 @@ server <- function(input, output) {
    
    pltr_results <- eventReactive(input$pltr_train_button, {
       
-      showModal(modalDialog("It takes a few seconds to train a good model...", footer = NULL))
+      showModal(modalDialog(metadata[["PLTR_WAIT_MSG"]], footer = NULL))
       
       # Prepare Train & Test Sets
       n_train   <- round(n_rows * input$pltr_fraction_train)
@@ -205,7 +221,7 @@ server <- function(input, output) {
       train_set <- clean_housing_dataset[i_train, ]
       test_set  <- clean_housing_dataset[-i_train, ]
       
-      results <- pltr_learner(train_set, test_set, predictors_pairs)
+      results <- pltr_learner(train_set, test_set, predictors_pairs, input$pltr_penalty)
       
       eval_metrics <- compute_evaluation_criteria(
          test_set$BAD %>% as.character() %>% as.numeric(), 
@@ -393,8 +409,7 @@ server <- function(input, output) {
    
    rf_results <- eventReactive(input$rf_train_button, {
       
-      showModal(modalDialog("There are many ways to explore the forest beyond a walk in the woods...",
-                            footer = NULL))
+      showModal(modalDialog(metadata[["RF_WAITING_MSG"]], footer = NULL))
       
       # Prepare Train & Test Sets
       n_train   <- round(n_rows * input$rf_fraction_train)
@@ -592,8 +607,7 @@ server <- function(input, output) {
    
    svm_results <- eventReactive(input$svm_train_button, {
       
-      showModal(modalDialog("Taking time to enforce social distancing in data by maximizing the margin...",
-                            footer = NULL))
+      showModal(modalDialog(metadata[['SVM_WAITING_MSG']], footer = NULL))
       
       # Prepare Train & Test Sets
       n_train   <- round(n_rows * input$svm_fraction_train)
@@ -712,15 +726,15 @@ server <- function(input, output) {
       
       if (input$llr_penalty == -1) {
          
-         waiting_message <- "I learn pretty fast. Chances are you will not notice me..."
+         waiting_message <- metadata[["LLR_WAITING_MSG"]]
          
       } else if (input$llr_penalty == 2) {
          
-         waiting_message <- "I take more time than my friends because I am adaptive!"
+         waiting_message <- metadata[['ALASSO_WAITING_MSG']]
          
       } else {
          
-         waiting_message <- "Having fun while penalizing some predictors..."
+         waiting_message <- metadata[['LASSO_RIDGE_WAITING_MSG']]
          
       }
       
@@ -921,8 +935,7 @@ server <- function(input, output) {
    nllr_results <- eventReactive(input$nllr_train_button, {
       
       showModal(
-         modalDialog("Trying to be smarter by also learning from interaction and quadratic terms...", 
-                     footer = NULL)
+         modalDialog(metadata[["NLLR_WAITING_MSG"]], footer = NULL)
       )
       
       # Prepare Train & Test Sets
@@ -1106,7 +1119,148 @@ server <- function(input, output) {
       
    })
    
+   output$pltr_cv_dt <- DT::renderDataTable(
+      
+      {
+         
+         pltr_cv_results_dt$cv_results
+         
+      },
+      
+      class = "display nowrap",
+      
+      options = list(scrollX  = TRUE,
+                     pageLength = 6,
+                     language = list(zeroRecords = "Cross validation results not yet computed"))
+      
+   )
+   
+   pltr_cv_results <- eventReactive(input$pltr_cv_button, {
+      
+      folds <- partition_data(clean_housing_dataset, N = input$pltr_cv_n, random_seed = input$pltr_cv_seed)
+      
+      cv_results <- cross_validate(folds, pltr_learner, compute_evaluation_criteria, 
+                                   predictors_pairs = predictors_pairs, penalty = input$pltr_cv_penalty)
+      
+      pltr_cv_results_dt$cv_results <<- dplyr::add_row(
+         
+         pltr_cv_results_dt$cv_results,
+         
+         Iteration = cv_results$Iteration,
+         AUC       = cv_results$AUC,
+         GINI      = cv_results$GINI,
+         PCC       = cv_results$PCC,
+         BS        = cv_results$BS,
+         KS        = cv_results$KS
+         
+      ) %>% dplyr::mutate_if(is.numeric, round, 4)
+      
+      pltr_cv_results_dt$cv_results
+      
+   })
+   
+   output$pltr_cv_eval_metrics <- renderUI({
+      
+      average_results <- pltr_cv_results() %>%
+         dplyr::select(-Iteration) %>%
+         colMeans() %>%
+         round(4)
+      
+      fluidRow(
+         
+         box(
+            
+            title = "AVERAGE CROSS VALIDATION RESULTS",
+            
+            width = 12,
+            
+            valueBox(
+               
+               value    = average_results["AUC"],
+               subtitle = "Area under the ROC Curve (AUC)",
+               icon     = icon("chart-area"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["GINI"],
+               subtitle = "GINI",
+               icon     = icon("goodreads-g"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["PCC"],
+               subtitle = "Percent of Correct Classifcation (PCC)",
+               icon     = icon("product-hunt"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["BS"],
+               subtitle = "Brier Score (BS)",
+               icon     = icon("bold"),
+               width    = 6,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["KS"],
+               subtitle = "Kolmogorov-Smirnov Statistic (KS)",
+               icon     = icon("kickstarter-k"),
+               width    = 6,
+               color    = "blue"
+               
+            )
+            
+         ),
+         
+         br()
+         
+      )
+      
+   })
+   
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

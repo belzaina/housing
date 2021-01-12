@@ -19,8 +19,12 @@ cross_validate <- function(cv_partitions, learner, evaluator, ...) {
          
          function(data_partition) {
             
-            print(paste("Processing N =", N))
-            N <<- N + 1
+            showModal(
+               modalDialog(
+                  paste("Processing N = ", N, ": Training on Fold 1 and Testing on Fold 2"), 
+                  footer = NULL
+               )
+            )
             
             # STEP 1:
             # Train on Fold1 and Test on Fold2
@@ -36,6 +40,18 @@ cross_validate <- function(cv_partitions, learner, evaluator, ...) {
                predicted_y_class = predictions_test_1[['Predicted_Y_Test_Class']]
             )
             
+            eval_metrics_1 %<>% dplyr::mutate(
+               Iteration = paste0("N = ", N, ", Fold = 2")
+            )
+            
+            removeModal()
+            showModal(
+               modalDialog(
+                  paste("Still Processing N = ", N, ", but Now Training on Fold 2 and Testing on Fold 1"), 
+                  footer = NULL
+               )
+            )
+            
             # STEP 2:
             # Train on Fold2 and Test on Fold1
             y_test_2 <- learner(
@@ -49,6 +65,14 @@ cross_validate <- function(cv_partitions, learner, evaluator, ...) {
                predicted_y_prob  = y_test_2[['Predicted_Y_Test_Prob']],
                predicted_y_class = y_test_2[['Predicted_Y_Test_Class']]
             )
+            
+            eval_metrics_2 %<>% dplyr::mutate(
+               Iteration = paste0("N = ", N, ", Fold = 1")
+            )
+            
+            removeModal()
+            
+            N <<- N + 1
             
             # rbind
             dplyr::bind_rows(eval_metrics_1, eval_metrics_2)

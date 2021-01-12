@@ -12,8 +12,38 @@ metadata <- list(
    
    "INTRO_6" = "Step 2: Use these indicator variables as additional predictors in a penalized logistic regression.",
    
-   # "EXTRACTED_RULES" = "The new indicator variables correspond to the following rules:",
+   "EXTRACTED_RULES" = "One leaf of each of the two branches originating from the root of the tree is retained - Dumitrescu et al. (2020):",
    
-   "EXTRACTED_RULES" = "One leaf of each of the two branches originating from the root of the tree is retained - Dumitrescu et al. (2020):"
+   "PLTR_WAIT_MSG" = "It takes a few seconds to train a good and interpretable model that you can trust...",
+   
+   "RF_WAITING_MSG" = "There are many ways to explore the forest beyond a walk in the woods...",
+   
+   "SVM_WAITING_MSG" = "Trying to enforce social distancing in data by maximizing the margin...",
+   
+   "LLR_WAITING_MSG" = "I learn pretty fast. Chances are you will never notice me...",
+   
+   "ALASSO_WAITING_MSG" = "The Oracle Property comes with a price: a few more compute seconds...",
+   
+   "LASSO_RIDGE_WAITING_MSG" = "Having fun while penalizing some predictors...",
+   
+   "NLLR_WAITING_MSG" = "Trying to be smarter by also learning from interaction and quadratic terms..."
    
 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

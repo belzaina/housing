@@ -1,9 +1,14 @@
 library(magrittr)
 
 source("scripts/rules_utilities.R")
+source("scripts/penalized_learner.R")
 
+#' Penalty
+#'    0: Ridge
+#'    1: LASSO
+#'    2: ADAPTIVE LASSO
 
-pltr_learner <- function(train_dataframe, test_dataframe, predictors_pairs) {
+pltr_learner <- function(train_dataframe, test_dataframe, predictors_pairs, penalty = c(0, 1, 2)) {
    
    n_predictors <- ncol(train_dataframe) - 1 
    
@@ -54,65 +59,20 @@ pltr_learner <- function(train_dataframe, test_dataframe, predictors_pairs) {
    # Count number of rules
    rules_count <- ncol(train_dataframe) - 1 - n_predictors
    
-   # CV (10-fold) Ridge to Get the LASSO Penalty Factor
-   ridge_cv <- glmnet::cv.glmnet(
-      x = train_dataframe %>% dplyr::select(-BAD) %>% data.matrix(),
-      y = train_dataframe$BAD,
-      family = "binomial",
-      type.measure = "auc",
-      nfolds = 10,
-      alpha = 0,
-   )
+   # Penalize
+   penalty_results <- penalized_learner(train_dataframe, test_dataframe, penalty = penalty)
    
-   # -1 to exclude the intercept
-   best_ridge_coef <- as.numeric(coef(ridge_cv, s = ridge_cv$lambda.min))[-1]
-   
-   # CV (10-fold) Adaptive LASSO
-   ada_lasso <- glmnet::cv.glmnet(
-      x = train_dataframe %>% dplyr::select(-BAD) %>% data.matrix(),
-      y = train_dataframe$BAD,
-      family = "binomial",
-      type.measure = "auc",
-      nfolds = 10,
-      alpha = 1,
-      penalty.factor = 1 / abs(best_ridge_coef)
-   )
-   
-   # coef_ranks
-   cs <- as.matrix(coef(ada_lasso, s = "lambda.min"))
-   coef_ranks <- cs[-1, 1]
-   
-   predictors_names <- names(coef_ranks) %>%
+   pretty_predictors_names <- penalty_results[["coef_ranks"]]$Predictor %>%
       purrr::map_chr(pretty_print_rule)
    
-   coef_ranks <- dplyr::tibble(
-      Predictor = predictors_names,
-      Coefficient = coef_ranks,
-      Coefficient_Magnitude = abs(coef_ranks)
-   ) %>% dplyr::arrange(
-      dplyr::desc(Coefficient_Magnitude)
-   )
-   
-   # Predict on test set
-   predicted_test_class <- predict(
-      ada_lasso, 
-      newx = test_dataframe %>% dplyr::select(-BAD) %>% data.matrix(), 
-      s = "lambda.min", 
-      type = "class"
-   ) %>% as.numeric()
-   
-   predicted_test_prob <- predict(
-      ada_lasso, 
-      newx = test_dataframe %>% dplyr::select(-BAD) %>% data.matrix(), 
-      s = "lambda.min", 
-      type = "response"
-   ) %>% as.numeric()
-   
    list(
-      Predicted_Y_Test_Prob  = predicted_test_prob,
-      Predicted_Y_Test_Class = predicted_test_class,
+      Predicted_Y_Test_Prob  = penalty_results[['Predicted_Y_Test_Prob']],
+      Predicted_Y_Test_Class = penalty_results[['Predicted_Y_Test_Class']],
       count_extracted_rules  = rules_count,
-      coef_ranks             = coef_ranks
+      coef_ranks             = penalty_results[['coef_ranks']] %>%
+         dplyr::mutate(
+            Predictor = pretty_predictors_names
+         )
    )
    
 }
