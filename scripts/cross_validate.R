@@ -41,7 +41,7 @@ cross_validate <- function(cv_partitions, learner, evaluator, ...) {
             )
             
             eval_metrics_1 %<>% dplyr::mutate(
-               Iteration = paste0("N = ", N, ", Fold = 2")
+               Iteration = paste0("N = ", N, ", test 1")
             )
             
             removeModal()
@@ -67,7 +67,7 @@ cross_validate <- function(cv_partitions, learner, evaluator, ...) {
             )
             
             eval_metrics_2 %<>% dplyr::mutate(
-               Iteration = paste0("N = ", N, ", Fold = 1")
+               Iteration = paste0("N = ", N, ", test 2")
             )
             
             removeModal()

@@ -21,7 +21,7 @@ source("scripts/precomputed_variables.R")
 # Metadata
 source("data/metadata.R")
 
-# CV Reactive datatable
+# CV Reactive datatables
 pltr_cv_results_dt <- reactiveValues(
    cv_results = dplyr::tibble(
       Iteration = character(),
@@ -32,6 +32,52 @@ pltr_cv_results_dt <- reactiveValues(
       KS        = numeric()
    )
 )
+
+rf_cv_results_dt <- reactiveValues(
+   cv_results = dplyr::tibble(
+      Iteration = character(),
+      AUC       = numeric(),
+      GINI      = numeric(),
+      PCC       = numeric(),
+      BS        = numeric(),
+      KS        = numeric()
+   )
+)
+
+svm_cv_results_dt <- reactiveValues(
+   cv_results = dplyr::tibble(
+      Iteration = character(),
+      AUC       = numeric(),
+      GINI      = numeric(),
+      PCC       = numeric(),
+      BS        = numeric(),
+      KS        = numeric()
+   )
+)
+
+llr_cv_results_dt <- reactiveValues(
+   cv_results = dplyr::tibble(
+      Iteration = character(),
+      AUC       = numeric(),
+      GINI      = numeric(),
+      PCC       = numeric(),
+      BS        = numeric(),
+      KS        = numeric()
+   )
+)
+
+nllr_cv_results_dt <- reactiveValues(
+   cv_results = dplyr::tibble(
+      Iteration = character(),
+      AUC       = numeric(),
+      GINI      = numeric(),
+      PCC       = numeric(),
+      BS        = numeric(),
+      KS        = numeric()
+   )
+)
+
+
 
 server <- function(input, output) {
    
@@ -83,7 +129,8 @@ server <- function(input, output) {
       options = list(
          scrollX = TRUE, 
          pageLength = 10
-      )
+      ),
+      rownames = FALSE
    )
    
    output$summary_stats <- shiny::renderUI({
@@ -1131,7 +1178,9 @@ server <- function(input, output) {
       
       options = list(scrollX  = TRUE,
                      pageLength = 6,
-                     language = list(zeroRecords = "Cross validation results not yet computed"))
+                     language = list(zeroRecords = "Cross validation results not yet computed")),
+      
+      rownames = FALSE
       
    )
    
@@ -1141,6 +1190,12 @@ server <- function(input, output) {
       
       cv_results <- cross_validate(folds, pltr_learner, compute_evaluation_criteria, 
                                    predictors_pairs = predictors_pairs, penalty = input$pltr_cv_penalty)
+      
+      
+      pltr_cv_results_dt$cv_results <<- pltr_cv_results_dt$cv_results %>%
+         dplyr::filter(
+            FALSE
+         )
       
       pltr_cv_results_dt$cv_results <<- dplyr::add_row(
          
@@ -1162,6 +1217,500 @@ server <- function(input, output) {
    output$pltr_cv_eval_metrics <- renderUI({
       
       average_results <- pltr_cv_results() %>%
+         dplyr::select(-Iteration) %>%
+         colMeans() %>%
+         round(4)
+      
+      fluidRow(
+         
+         box(
+            
+            title = "AVERAGE CROSS VALIDATION RESULTS",
+            
+            width = 12,
+            
+            valueBox(
+               
+               value    = average_results["AUC"],
+               subtitle = "Area under the ROC Curve (AUC)",
+               icon     = icon("chart-area"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["GINI"],
+               subtitle = "GINI",
+               icon     = icon("goodreads-g"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["PCC"],
+               subtitle = "Percent of Correct Classifcation (PCC)",
+               icon     = icon("product-hunt"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["BS"],
+               subtitle = "Brier Score (BS)",
+               icon     = icon("bold"),
+               width    = 6,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["KS"],
+               subtitle = "Kolmogorov-Smirnov Statistic (KS)",
+               icon     = icon("kickstarter-k"),
+               width    = 6,
+               color    = "blue"
+               
+            )
+            
+         ),
+         
+         br()
+         
+      )
+      
+   })
+   
+   output$rf_cv_dt <- DT::renderDataTable(
+      
+      {
+         
+         rf_cv_results_dt$cv_results
+         
+      },
+      
+      class = "display nowrap",
+      
+      options = list(scrollX  = TRUE,
+                     pageLength = 6,
+                     language = list(zeroRecords = "Cross validation results not yet computed")),
+      
+      rownames = FALSE
+      
+   )
+   
+   rf_cv_results <- eventReactive(input$rf_cv_button, {
+      
+      folds <- partition_data(clean_housing_dataset, N = input$rf_cv_n, random_seed = input$rf_cv_seed)
+      
+      cv_results <- cross_validate(folds, random_forest_learner, compute_evaluation_criteria, 
+                                   random_seed = input$rf_cv_seed)
+      
+      
+      rf_cv_results_dt$cv_results <<- rf_cv_results_dt$cv_results %>%
+         dplyr::filter(FALSE)
+      
+      rf_cv_results_dt$cv_results <<- dplyr::add_row(
+         
+         rf_cv_results_dt$cv_results,
+         
+         Iteration = cv_results$Iteration,
+         AUC       = cv_results$AUC,
+         GINI      = cv_results$GINI,
+         PCC       = cv_results$PCC,
+         BS        = cv_results$BS,
+         KS        = cv_results$KS
+         
+      ) %>% dplyr::mutate_if(is.numeric, round, 4)
+      
+      rf_cv_results_dt$cv_results
+      
+   })
+   
+   output$rf_cv_eval_metrics <- renderUI({
+      
+      average_results <- rf_cv_results() %>%
+         dplyr::select(-Iteration) %>%
+         colMeans() %>%
+         round(4)
+      
+      fluidRow(
+         
+         box(
+            
+            title = "AVERAGE CROSS VALIDATION RESULTS",
+            
+            width = 12,
+            
+            valueBox(
+               
+               value    = average_results["AUC"],
+               subtitle = "Area under the ROC Curve (AUC)",
+               icon     = icon("chart-area"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["GINI"],
+               subtitle = "GINI",
+               icon     = icon("goodreads-g"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["PCC"],
+               subtitle = "Percent of Correct Classifcation (PCC)",
+               icon     = icon("product-hunt"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["BS"],
+               subtitle = "Brier Score (BS)",
+               icon     = icon("bold"),
+               width    = 6,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["KS"],
+               subtitle = "Kolmogorov-Smirnov Statistic (KS)",
+               icon     = icon("kickstarter-k"),
+               width    = 6,
+               color    = "blue"
+               
+            )
+            
+         ),
+         
+         br()
+         
+      )
+      
+   })
+   
+   output$svm_cv_dt <- DT::renderDataTable(
+      
+      {
+         
+         svm_cv_results_dt$cv_results
+         
+      },
+      
+      class = "display nowrap",
+      
+      options = list(scrollX  = TRUE,
+                     pageLength = 6,
+                     language = list(zeroRecords = "Cross validation results not yet computed")),
+      
+      rownames = FALSE
+      
+   )
+   
+   svm_cv_results <- eventReactive(input$svm_cv_button, {
+      
+      folds <- partition_data(clean_housing_dataset, N = input$svm_cv_n, random_seed = input$svm_cv_seed)
+      
+      cv_results <- cross_validate(folds, svm_learner, compute_evaluation_criteria, 
+                                   kernel = input$svm_cv_kernel)
+      
+      
+      svm_cv_results_dt$cv_results <<- svm_cv_results_dt$cv_results %>%
+         dplyr::filter(FALSE)
+      
+      svm_cv_results_dt$cv_results <<- dplyr::add_row(
+         
+         svm_cv_results_dt$cv_results,
+         
+         Iteration = cv_results$Iteration,
+         AUC       = cv_results$AUC,
+         GINI      = cv_results$GINI,
+         PCC       = cv_results$PCC,
+         BS        = cv_results$BS,
+         KS        = cv_results$KS
+         
+      ) %>% dplyr::mutate_if(is.numeric, round, 4)
+      
+      svm_cv_results_dt$cv_results
+      
+   })
+   
+   output$svm_cv_eval_metrics <- renderUI({
+      
+      average_results <- svm_cv_results() %>%
+         dplyr::select(-Iteration) %>%
+         colMeans() %>%
+         round(4)
+      
+      fluidRow(
+         
+         box(
+            
+            title = "AVERAGE CROSS VALIDATION RESULTS",
+            
+            width = 12,
+            
+            valueBox(
+               
+               value    = average_results["AUC"],
+               subtitle = "Area under the ROC Curve (AUC)",
+               icon     = icon("chart-area"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["GINI"],
+               subtitle = "GINI",
+               icon     = icon("goodreads-g"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["PCC"],
+               subtitle = "Percent of Correct Classifcation (PCC)",
+               icon     = icon("product-hunt"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["BS"],
+               subtitle = "Brier Score (BS)",
+               icon     = icon("bold"),
+               width    = 6,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["KS"],
+               subtitle = "Kolmogorov-Smirnov Statistic (KS)",
+               icon     = icon("kickstarter-k"),
+               width    = 6,
+               color    = "blue"
+               
+            )
+            
+         ),
+         
+         br()
+         
+      )
+      
+   })
+   
+   output$llr_cv_dt <- DT::renderDataTable(
+      
+      {
+         
+         llr_cv_results_dt$cv_results
+         
+      },
+      
+      class = "display nowrap",
+      
+      options = list(scrollX  = TRUE,
+                     pageLength = 6,
+                     language = list(zeroRecords = "Cross validation results not yet computed")),
+      
+      rownames = FALSE
+      
+   )
+   
+   llr_cv_results <- eventReactive(input$llr_cv_button, {
+      
+      # No Penalty
+      if (input$llr_cv_penalty == -1) {
+         
+         # use R factor encoding to avoid rank-deficient
+         folds <- partition_data(clean_housing_dataset_eda, 
+                                 N = input$llr_cv_n, 
+                                 random_seed = input$llr_cv_seed)
+         
+         cv_results <- cross_validate(folds, logistic_learner, compute_evaluation_criteria)
+         
+      } else {
+         
+         folds <- partition_data(clean_housing_dataset, 
+                                 N = input$llr_cv_n, 
+                                 random_seed = input$llr_cv_seed)
+         
+         cv_results <- cross_validate(folds, penalized_learner, compute_evaluation_criteria, 
+                                      penalty = input$llr_cv_penalty)
+         
+      }
+      
+      llr_cv_results_dt$cv_results <<- llr_cv_results_dt$cv_results %>%
+         dplyr::filter(FALSE)
+      
+      llr_cv_results_dt$cv_results <<- dplyr::add_row(
+         
+         llr_cv_results_dt$cv_results,
+         
+         Iteration = cv_results$Iteration,
+         AUC       = cv_results$AUC,
+         GINI      = cv_results$GINI,
+         PCC       = cv_results$PCC,
+         BS        = cv_results$BS,
+         KS        = cv_results$KS
+         
+      ) %>% dplyr::mutate_if(is.numeric, round, 4)
+      
+      llr_cv_results_dt$cv_results
+      
+   })
+   
+   output$llr_cv_eval_metrics <- renderUI({
+      
+      average_results <- llr_cv_results() %>%
+         dplyr::select(-Iteration) %>%
+         colMeans() %>%
+         round(4)
+      
+      fluidRow(
+         
+         box(
+            
+            title = "AVERAGE CROSS VALIDATION RESULTS",
+            
+            width = 12,
+            
+            valueBox(
+               
+               value    = average_results["AUC"],
+               subtitle = "Area under the ROC Curve (AUC)",
+               icon     = icon("chart-area"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["GINI"],
+               subtitle = "GINI",
+               icon     = icon("goodreads-g"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["PCC"],
+               subtitle = "Percent of Correct Classifcation (PCC)",
+               icon     = icon("product-hunt"),
+               width    = 4,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["BS"],
+               subtitle = "Brier Score (BS)",
+               icon     = icon("bold"),
+               width    = 6,
+               color    = "blue"
+               
+            ),
+            
+            valueBox(
+               
+               value    = average_results["KS"],
+               subtitle = "Kolmogorov-Smirnov Statistic (KS)",
+               icon     = icon("kickstarter-k"),
+               width    = 6,
+               color    = "blue"
+               
+            )
+            
+         ),
+         
+         br()
+         
+      )
+      
+   })
+   
+   output$nllr_cv_dt <- DT::renderDataTable(
+      
+      {
+         
+         nllr_cv_results_dt$cv_results
+         
+      },
+      
+      class = "display nowrap",
+      
+      options = list(scrollX  = TRUE,
+                     pageLength = 6,
+                     language = list(zeroRecords = "Cross validation results not yet computed")),
+      
+      rownames = FALSE
+      
+   )
+   
+   nllr_cv_results <- eventReactive(input$nllr_cv_button, {
+      
+      folds <- partition_data(clean_with_interaction_quadratic, 
+                              N = input$nllr_cv_n, random_seed = input$nllr_cv_seed)
+      
+      cv_results <- cross_validate(folds, penalized_learner, compute_evaluation_criteria, 
+                                   penalty = input$nllr_cv_penalty)
+      
+      
+      nllr_cv_results_dt$cv_results <<- nllr_cv_results_dt$cv_results %>%
+         dplyr::filter(
+            FALSE
+         )
+      
+      nllr_cv_results_dt$cv_results <<- dplyr::add_row(
+         
+         nllr_cv_results_dt$cv_results,
+         
+         Iteration = cv_results$Iteration,
+         AUC       = cv_results$AUC,
+         GINI      = cv_results$GINI,
+         PCC       = cv_results$PCC,
+         BS        = cv_results$BS,
+         KS        = cv_results$KS
+         
+      ) %>% dplyr::mutate_if(is.numeric, round, 4)
+      
+      nllr_cv_results_dt$cv_results
+      
+   })
+   
+   output$nllr_cv_eval_metrics <- renderUI({
+      
+      average_results <- nllr_cv_results() %>%
          dplyr::select(-Iteration) %>%
          colMeans() %>%
          round(4)

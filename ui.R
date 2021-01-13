@@ -20,7 +20,7 @@ ui <- dashboardPage(
          
          menuItem("MODELS", tabName = "models", icon = icon("chart-line")),
          
-         menuItem("DIETTERICH N x 2-FOLD CV", tabName = "cv", icon = icon("chart-line")),
+         menuItem("DIETTERICH N x 2-FOLD CV", tabName = "cv", icon = icon("microscope")),
          
          menuItem("REPRODUCIBLE RESEARCH", tabName = "reproducible_research", icon = icon("laptop-code")),
          
@@ -655,15 +655,15 @@ ui <- dashboardPage(
                            
                            column(
                               
-                              offset = 3,
-                              
-                              width = 12,
+                              width = 6,
                               
                               box(
                                  
                                  title = "TRAINING PARAMETERS",
                                  
-                                 width = 6,
+                                 width = 12,
+                                 
+                                 height = "471.8px",
                                  
                                  numericInput("rf_cv_seed", label = h4("Seed"), value = 8081, min = 1),
                                  
@@ -672,6 +672,26 @@ ui <- dashboardPage(
                                  br(),
                                  
                                  actionButton("rf_cv_button", h4("Cross Validate!"), width = '100%')
+                                 
+                              )
+                              
+                           ),
+                           
+                           column(
+                              
+                              width = 6,
+                              
+                              box(
+                                 
+                                 width = 12,
+                                 
+                                 height = "471.8px",
+                                 
+                                 title = "CROSS VALIDATION RESULTS",
+                                 
+                                 br(),
+                                 
+                                 DT::dataTableOutput("rf_cv_dt")
                                  
                               )
                               
@@ -693,15 +713,15 @@ ui <- dashboardPage(
                            
                            column(
                               
-                              offset = 3,
-                              
-                              width = 12,
+                              width = 6,
                               
                               box(
                                  
                                  title = "TRAINING PARAMETERS",
                                  
-                                 width = 6,
+                                 width = 12,
+                                 
+                                 height = "471.8px",
                                  
                                  numericInput("svm_cv_seed", label = h4("Seed"), value = 8081, min = 1),
                                  
@@ -717,6 +737,26 @@ ui <- dashboardPage(
                                  br(),
                                  
                                  actionButton("svm_cv_button", h4("Cross Validate!"), width = '100%')
+                                 
+                              )
+                              
+                           ),
+                           
+                           column(
+                              
+                              width = 6,
+                              
+                              box(
+                                 
+                                 width = 12,
+                                 
+                                 height = "471.8px",
+                                 
+                                 title = "CROSS VALIDATION RESULTS",
+                                 
+                                 br(),
+                                 
+                                 DT::dataTableOutput("svm_cv_dt")
                                  
                               )
                               
@@ -738,15 +778,13 @@ ui <- dashboardPage(
                            
                            column(
                               
-                              offset = 3,
-                              
-                              width = 12,
+                              width = 6,
                               
                               box(
                                  
                                  title = "TRAINING PARAMETERS",
                                  
-                                 width = 6,
+                                 width = 12,
                                  
                                  numericInput("llr_cv_seed", label = h4("Seed"), value = 8081, min = 1),
                                  
@@ -764,6 +802,26 @@ ui <- dashboardPage(
                                  br(),
                                  
                                  actionButton("llr_cv_button", h4("Cross Validate!"), width = '100%')
+                                 
+                              )
+                              
+                           ),
+                           
+                           column(
+                              
+                              width = 6,
+                              
+                              box(
+                                 
+                                 width = 12,
+                                 
+                                 height = "500.8px",
+                                 
+                                 title = "CROSS VALIDATION RESULTS",
+                                 
+                                 br(),
+                                 
+                                 DT::dataTableOutput("llr_cv_dt")
                                  
                               )
                               
@@ -785,15 +843,13 @@ ui <- dashboardPage(
                            
                            column(
                               
-                              offset = 3,
-                              
-                              width = 12,
+                              width = 6,
                               
                               box(
                                  
                                  title = "TRAINING PARAMETERS",
                                  
-                                 width = 6,
+                                 width = 12,
                                  
                                  numericInput("nllr_cv_seed", label = h4("Seed"), value = 8081, min = 1),
                                  
@@ -810,6 +866,26 @@ ui <- dashboardPage(
                                  br(),
                                  
                                  actionButton("nllr_cv_button", h4("Cross Validate!"), width = '100%')
+                                 
+                              )
+                              
+                           ),
+                           
+                           column(
+                              
+                              width = 6,
+                              
+                              box(
+                                 
+                                 width = 12,
+                                 
+                                 height = "471.8px",
+                                 
+                                 title = "CROSS VALIDATION RESULTS",
+                                 
+                                 br(),
+                                 
+                                 DT::dataTableOutput("nllr_cv_dt")
                                  
                               )
                               
