@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/belzaina/housing.svg?token=speK6yitTLXioyfS2PKH&branch=master)](https://travis-ci.com/belzaina/housing)
+[![Build Status](https://travis-ci.com/belzaina/housing.svg?token=speK6yitTLXioyfS2PKH&branch=master)](https://travis-ci.com/belzaina/housing)     
+     
 [![ForTheBadge built-with-science](http://ForTheBadge.com/images/badges/built-with-science.svg)](https://belgadazainab.shinyapps.io/housing/)
 
 # Penalized Logistic Tree Regression (PLTR) - Housing Dataset (shinyapp)
@@ -57,7 +58,7 @@ This procedure is repeated N times, and the evaluation metrics are averaged. We 
 This project was conducted by [ZAINAB BELGADA](https://fr.linkedin.com/in/za%C3%AFnab-belgada-b1175b1ab)[^fn3] and [ZINSOU DAMIEN](https://www.linkedin.com/in/zinsou-damien-m-7073861b6/)[^fn4] under the supervision of Professor [TOKPAVI SESSI](http://www.leo-univ-orleans.fr/fr/membres/#sessi.tokpavi@univ-orleans.fr)[^fn5] for Autumn 2020 [Master ESA](https://www.univ-orleans.fr/deg/masters/ESA/) Big Data Analytics class at [University of Orléans](https://www.univ-orleans.fr/fr/univ).
 
 
-![Master ESA]("/www/Logo-couleur-MasterESA-RVB.jpg" "Master ESA")
+![Master ESA](www/Logo-couleur-MasterESA-RVB.jpg "Master ESA")
 
 
 [^fn1]: Elena Dumitrescuy, Sullivan Hué, Christophe Hurlinx, and Sessi Tokpavi "Machine Learning or Econometrics for Credit Scoring: Let's Get the Best of Both Worlds", October 15, 2020.
