@@ -1,15 +1,19 @@
 library(magrittr)
 
 #' Train a Learning Algorithm & Output the "N x 2-fold" cross-validation Results (Dietterich, 1998)
+#' 
 #' Inputs : 
-#'    - cv_partitions: output of partition_data function (partition_data.R)
+#' 
+#'    - cv_partitions: List of data partitions - output of partition_data function (partition_data.R)
 #'    - learner      : a learning algorithm
 #'    - evaluator    : a function to compute evaluation criteria
+#'    - shinyProgress: Logical (default TRUE). Showing Shiny Progress or Not
 #'    - ...          : extra arguments to be passed to the learner
+#' 
 #' Outputs:
 #'    - dataframe with evaluation metric for each test-fold
 
-cross_validate <- function(cv_partitions, learner, evaluator, ...) {
+cross_validate <- function(cv_partitions, learner, evaluator, shinyProgress = TRUE, ...) {
    
    N <- 1
    
@@ -19,12 +23,20 @@ cross_validate <- function(cv_partitions, learner, evaluator, ...) {
          
          function(data_partition) {
             
-            showModal(
-               modalDialog(
-                  paste("Processing N = ", N, ": Training on Fold 1 and Testing on Fold 2"), 
-                  footer = NULL
+            if (shinyProgress) {
+               
+               showModal(
+                  modalDialog(
+                     paste0("Processing N = ", N, ": Training on Fold 1 and Testing on Fold 2"), 
+                     footer = icon("hourglass-start")
+                  )
                )
-            )
+               
+            } else {
+               
+               cat(paste0("Processing N = ", N, ": Training on Fold 1 and Testing on Fold 2\n"))
+               
+            }
             
             # STEP 1:
             # Train on Fold1 and Test on Fold2
@@ -44,13 +56,26 @@ cross_validate <- function(cv_partitions, learner, evaluator, ...) {
                Iteration = paste0("N = ", N, ", test 1")
             )
             
-            removeModal()
-            showModal(
-               modalDialog(
-                  paste("Still Processing N = ", N, ", but Now Training on Fold 2 and Testing on Fold 1"), 
-                  footer = NULL
+            if (shinyProgress) {
+               
+               removeModal()
+               
+               showModal(
+                  modalDialog(
+                     paste0("Still Processing N = ", 
+                            N, 
+                            ", But Now Training on Fold 2 and Testing on Fold 1"), 
+                     footer = icon("hourglass-end")
+                  )
                )
-            )
+               
+            } else {
+               
+               cat(paste0("Still Processing N = ", 
+                          N, 
+                          ", But Now Training on Fold 2 and Testing on Fold 1\n"))
+               
+            }
             
             # STEP 2:
             # Train on Fold2 and Test on Fold1
@@ -70,12 +95,13 @@ cross_validate <- function(cv_partitions, learner, evaluator, ...) {
                Iteration = paste0("N = ", N, ", test 2")
             )
             
-            removeModal()
+            if (shinyProgress) removeModal()
             
             N <<- N + 1
             
             # rbind
-            dplyr::bind_rows(eval_metrics_1, eval_metrics_2)
+            dplyr::bind_rows(eval_metrics_1, eval_metrics_2) %>%
+               dplyr::relocate(Iteration, .before = AUC)
             
          }
          

@@ -6,11 +6,11 @@ library(magrittr)
 
 # Loading Scripts...
 source("scripts/rules_utilities.R")
+source("scripts/penalized_learner.R")
 source("scripts/compute_evaluation_criteria.R")
 source("scripts/pltr_learner.R")
 source("scripts/random_forest_learner.R")
 source("scripts/svm_learner.R")
-source("scripts/penalized_learner.R")
 source("scripts/logistic_learner.R")
 source("scripts/partition_data.R")
 source("scripts/cross_validate.R")
@@ -259,7 +259,7 @@ server <- function(input, output) {
    
    pltr_results <- eventReactive(input$pltr_train_button, {
       
-      showModal(modalDialog(metadata[["PLTR_WAIT_MSG"]], footer = NULL))
+      showModal(modalDialog(metadata[["PLTR_WAIT_MSG"]], footer = icon("grin-beam")))
       
       # Prepare Train & Test Sets
       n_train   <- round(n_rows * input$pltr_fraction_train)
@@ -456,7 +456,7 @@ server <- function(input, output) {
    
    rf_results <- eventReactive(input$rf_train_button, {
       
-      showModal(modalDialog(metadata[["RF_WAITING_MSG"]], footer = NULL))
+      showModal(modalDialog(metadata[["RF_WAITING_MSG"]], footer = icon("tree")))
       
       # Prepare Train & Test Sets
       n_train   <- round(n_rows * input$rf_fraction_train)
@@ -654,7 +654,7 @@ server <- function(input, output) {
    
    svm_results <- eventReactive(input$svm_train_button, {
       
-      showModal(modalDialog(metadata[['SVM_WAITING_MSG']], footer = NULL))
+      showModal(modalDialog(metadata[['SVM_WAITING_MSG']], footer = icon("grin-squint-tears")))
       
       # Prepare Train & Test Sets
       n_train   <- round(n_rows * input$svm_fraction_train)
@@ -785,7 +785,7 @@ server <- function(input, output) {
          
       }
       
-      showModal(modalDialog(waiting_message, footer = NULL))
+      showModal(modalDialog(waiting_message, footer = icon("smile-wink")))
       
       # Prepare Train & Test Sets
       n_train   <- round(n_rows * input$llr_fraction_train)
@@ -982,7 +982,7 @@ server <- function(input, output) {
    nllr_results <- eventReactive(input$nllr_train_button, {
       
       showModal(
-         modalDialog(metadata[["NLLR_WAITING_MSG"]], footer = NULL)
+         modalDialog(metadata[["NLLR_WAITING_MSG"]], footer = icon("grin-beam-sweat"))
       )
       
       # Prepare Train & Test Sets

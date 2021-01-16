@@ -1,6 +1,8 @@
 library(magrittr)
 
-
+#'
+#' Formate Rule to be Used as Column Name
+#'
 format_rule <- function(s) {
    
    s %<>% stringr::str_replace_all(">=", "GTE")
@@ -13,6 +15,10 @@ format_rule <- function(s) {
    
 }
 
+
+#'
+#' Pretty Print a Rule
+#'
 pretty_print_rule <- function(s) {
    
    s %<>% stringr::str_replace_all("_GTE_", " >= ")
@@ -26,6 +32,9 @@ pretty_print_rule <- function(s) {
 }
 
 
+#'
+#' Extract Rules from an rpart model object
+#'
 extract_rules <- function(rpart_model, format = TRUE) {
    
    rules <- rpart_model %>%
@@ -64,6 +73,9 @@ extract_rules <- function(rpart_model, format = TRUE) {
 }
 
 
+#'
+#' Generate all Pairs of Predictors
+#'
 get_predictors_pair <- function(predictors) {
    
    predictors %>%

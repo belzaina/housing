@@ -1,6 +1,19 @@
 #' Run Logistic Regression
-#' Inputs : Training DataFrame, Testing DataFrame
-#' Outputs: Predicted_Y_Test_Prob, Predicted_Y_Test_Class
+#' 
+#' Inputs :
+#'  
+#'    - Training DataFrame
+#'    - Testing DataFrame
+#'      
+#'      NB: Qualitative predictors should be encoded as R factor to avoid low rank warning
+#'          In our application, use "clean_housing_dataset_eda" tibble to generate cv partitions
+#' 
+#' Output: List of
+#'  
+#'    - Predicted_Y_Test_Prob  
+#'    - Predicted_Y_Test_Class
+#'    - coef_ranks (tibble)
+#' 
 logistic_learner <- function(train_dataframe, test_dataframe) {
    
    # Train

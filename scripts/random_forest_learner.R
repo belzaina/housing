@@ -1,6 +1,20 @@
 #' Run Random Forest Algorithm
-#' Inputs : Training DataFrame, Testing DataFrame
-#' Outputs: Predicted_Y_Test_Prob, Predicted_Y_Test_Class
+#' 
+#' Inputs :
+#'  
+#'    - Training DataFrame
+#'    - Testing DataFrame
+#'    - Maximum Number of Tree
+#'    - Random Seed
+#'    - Variable Importance Metric (1: mean decrease in accuracy, 2: mean decrease in node impurity)
+#' 
+#' Outputs: List of 
+#' 
+#'    - Predicted_Y_Test_Prob
+#'    - Predicted_Y_Test_Class
+#'    - var_ranks (tibble)
+#'    - Optimal Number of Trees
+#' 
 random_forest_learner <- function(train_dataframe, test_dataframe, max_ntree = 200, 
                                   random_seed = 88, var_imp_type = 1) {
    

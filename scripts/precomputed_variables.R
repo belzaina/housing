@@ -4,6 +4,11 @@ source("scripts/prepare_housing_dataset.R")
 source("scripts/add_interaction_quadratic_terms.R")
 
 
+#' 
+#' Precomputed Values to Avoid Unnecessary Computations
+#' 
+
+
 # RAW DATASET
 raw_housing_dataset   <- readxl::read_excel('data/hmeq.xls', sheet = 'hmeq')
 

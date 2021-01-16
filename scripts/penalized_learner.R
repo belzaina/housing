@@ -1,9 +1,17 @@
-#' Run LASSO || RIDGE || Non-Regularization
+#' Run RIDGE || LASSO || ADAPTIVE LASSO
+#' 
 #' Inputs : 
+#' 
 #'    - Training DataFrame
 #'    - Testing DataFrame
-#'    - Penalty (1: LASSO, 0: RIDGE)
-#' Outputs: Predicted_Y_Test_Prob, Predicted_Y_Test_Class
+#'    - Penalty (0: RIDGE, 1: LASSO, 2: ADAPTIVE LASSO)
+#' 
+#' Outputs: 
+#' 
+#'    - Predicted_Y_Test_Prob
+#'    - Predicted_Y_Test_Class
+#'    - coef_ranks (tibble)
+#' 
 penalized_learner <- function(train_dataframe, test_dataframe, penalty = c(0, 1, 2)) {
    
    # CASE 1: Adaptive LASSO

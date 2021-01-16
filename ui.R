@@ -38,7 +38,7 @@ ui <- dashboardPage(
          
          HTML(
             
-            '<link rel="icon" href="logo_title.ico">'
+            '<link rel="icon" href="logo_title.jpg">'
             
          )
          
@@ -350,7 +350,7 @@ ui <- dashboardPage(
                                     c("Adaptive LASSO"      = 2,
                                       "LASSO"               = 1,
                                       "Ridge"               = 0
-                                      )
+                                    )
                                  ),
                                  
                                  br(),
@@ -907,15 +907,79 @@ ui <- dashboardPage(
             
             tabName = "reproducible_research",
             
-         ),
-         
-         tabItem(
-            
-            tabName = "about",
+            fluidRow(
+               
+               column(
+                  
+                  width = 3,
+                  
+                  box(
+                     
+                     width = 12,
+                     
+                     solidHeader = TRUE, 
+                     
+                     status = "info",
+                     
+                     title = "Choose a tutorial:",
+                     
+                     selectInput(
+                        
+                        "tutorial",
+                        
+                        NULL,
+                        
+                        multiple = FALSE,
+                        
+                        choices = list(
+                           
+                           "Robustness Check" = "robustness_check",
+                           "PLTR: How it Works" = "pltr_how"
+                           
+                        )
+                        
+                     )
+                     
+                  )
+                  
+               ),
+               
+               column(
+                  
+                  width = 9,
+                  
+                  conditionalPanel(
+                     
+                     condition = "input.tutorial == 'robustness_check'",
+                     
+                     fluidRow(
+                        
+                        tags$iframe(
+                           
+                           style = "height:650px; width:100%", 
+                           src = "vignettes/robustness_check.pdf"
+                           
+                        ),
+                        
+                        align = "center"
+                        
+                     )
+                     
+                  )
+                  
+               )
+               
+            )
             
          )
          
       ),
+      
+      tabItem(
+         
+         tabName = "about",
+         
+      )
       
    ),
    

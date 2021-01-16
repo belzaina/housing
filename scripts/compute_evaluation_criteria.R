@@ -1,9 +1,18 @@
-#' 1. Area under the ROC curve (AUC)
-#' 2. GINI INDEX
-#' 3. F1 Score (harmonic mean of the precision and recall)
-#' 4. Percentage of correctly classied (PCC) cases
-#' 5. Brier score (BS)
-#' 6. Kolmogorov-Smirnov statistic (KS)
+#' Compute Evaluation Metrics:
+#'    - Area under the ROC curve (AUC)
+#'    - GINI INDEX
+#'    - F1 Score (harmonic mean of the precision and recall)
+#'    - Percentage of correctly classied (PCC) cases
+#'    - Brier score (BS)
+#'    - Kolmogorov-Smirnov statistic (KS)
+#'    
+#' Inputs:
+#'    - True Lables
+#'    - Pedicted Labels
+#'    - Predicted Probabilities
+#'    
+#' Output: 1x6 tibble 
+#' 
 compute_evaluation_criteria <- function(y_true, predicted_y_prob, predicted_y_class) {
    
    # AUC

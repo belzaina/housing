@@ -13,10 +13,13 @@ mode_stat <- function(vect) {
 
 
 #' Clean the housing dataset
+#' 
 #' Input : 
 #'    - raw housing dataframe
-#'    - whether to convert qualitative predictors to dummy or not
+#'    - whether to convert qualitative predictors to dummy. If not, encode them as R's factor
+#'    
 #' Output: preprocessed dataframe
+#' 
 prepare_housing_dataset <- function(raw_housing_dataframe, to_dummy = TRUE) {
    
    # Qualitative Explanatory Variables: REASON, JOB

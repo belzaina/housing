@@ -1,12 +1,28 @@
 library(magrittr)
 
-source("scripts/rules_utilities.R")
-source("scripts/penalized_learner.R")
+# source("scripts/rules_utilities.R")
+# source("scripts/penalized_learner.R")
 
-#' Penalty
-#'    0: Ridge
-#'    1: LASSO
-#'    2: ADAPTIVE LASSO
+
+#' PENALIZED LOGISTIC TREE REGRESSION
+#' 
+#' Inputs :
+#'  
+#'    - Training DataFrame
+#'    - Testing DataFrame
+#'    - Predictors Pairs (precomputed in "precomputed_variables.R" to avoid unnecessary computations)
+#'    - Penalty
+#'       0: Ridge
+#'       1: LASSO
+#'       2: ADAPTIVE LASSO
+#'       
+#' Output: List of
+#'  
+#'    - Predicted_Y_Test_Prob  
+#'    - Predicted_Y_Test_Class
+#'    - Extracted Rules Count
+#'    - coef_ranks (tibble)
+#'       
 
 pltr_learner <- function(train_dataframe, test_dataframe, predictors_pairs, penalty = c(0, 1, 2)) {
    

@@ -1,9 +1,16 @@
 #' Run SVM Algorithm
+#' 
 #' Inputs : 
+#' 
 #'    - Training DataFrame
 #'    - Testing DataFrame
 #'    - ... (extra argument to be passed to svm function, e.g. kernel...)
-#' Outputs: Predicted_Y_Test_Prob, Predicted_Y_Test_Class
+#' 
+#' Outputs: 
+#' 
+#'    - Predicted_Y_Test_Prob
+#'    - Predicted_Y_Test_Class
+#' 
 svm_learner <- function(train_dataframe, test_dataframe, ...) {
    
    y_train <- train_dataframe$BAD
