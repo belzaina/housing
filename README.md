@@ -61,13 +61,13 @@ This project was conducted by [ZAINAB BELGADA](https://fr.linkedin.com/in/za%C3%
 ![Master ESA](www/Logo-couleur-MasterESA-RVB.jpg "Master ESA")
 
 
-<b id="f1">1</b> Elena Dumitrescuy, Sullivan Hué, Christophe Hurlinx, and Sessi Tokpavi "Machine Learning or Econometrics for Credit Scoring: Let's Get the Best of Both Worlds", October 15, 2020. [↩](#a1)    
+<b id="f1">1. </b> Elena Dumitrescuy, Sullivan Hué, Christophe Hurlinx, and Sessi Tokpavi "Machine Learning or Econometrics for Credit Scoring: Let's Get the Best of Both Worlds", October 15, 2020. [↩](#a1)    
      
-<b id="f2">2</b> Includes as additional variables quadratic and interaction terms. [↩](#a2)    
+<b id="f2">2. </b> Includes as additional variables quadratic and interaction terms. [↩](#a2)    
      
-<b id="f3">3</b> zainab.belgada@etu.univ-orleans.fr [↩](#a3)     
+<b id="f3">3. </b> zainab.belgada@etu.univ-orleans.fr [↩](#a3)     
      
-<b id="f4">4</b> zinsou.mezonlin@etu.univ-orleans.fr [↩](#a4)     
+<b id="f4">4. </b> zinsou.mezonlin@etu.univ-orleans.fr [↩](#a4)     
      
-<b id="f5">5</b> sessi.tokpavi@univorleans.fr [↩](#a5)     
+<b id="f5">5. </b> sessi.tokpavi@univorleans.fr [↩](#a5)     
 
