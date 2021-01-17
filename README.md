@@ -55,7 +55,7 @@ This procedure is repeated N times, and the evaluation metrics are averaged. We 
 
 ### About
 
-This project was conducted by [ZAINAB BELGADA](https://fr.linkedin.com/in/za%C3%AFnab-belgada-b1175b1ab) <sup id="a3">[3](#f3)</sup> and [ZINSOU DAMIEN](https://www.linkedin.com/in/zinsou-damien-m-7073861b6/) <sup id="a4">[4](#f4)</sup> under the supervision of Professor [TOKPAVI SESSI](http://www.leo-univ-orleans.fr/fr/membres/#sessi.tokpavi@univ-orleans.fr) <sup id="a5">[5](#f5)</sup> for Autumn 2020 [Master ESA](https://www.univ-orleans.fr/deg/masters/ESA/) Big Data Analytics class at [University of Orléans](https://www.univ-orleans.fr/fr/univ).
+This project was conducted by [ZAINAB BELGADA](https://fr.linkedin.com/in/za%C3%AFnab-belgada-b1175b1ab) <sup id="a3">[3](#f3)</sup> and [ZINSOU MEZONLIN DAMIEN](https://www.linkedin.com/in/zinsou-damien-m-7073861b6/) <sup id="a4">[4](#f4)</sup> under the supervision of Professor [TOKPAVI SESSI](http://www.leo-univ-orleans.fr/fr/membres/#sessi.tokpavi@univ-orleans.fr) <sup id="a5">[5](#f5)</sup> for Autumn 2020 [Master ESA](https://www.univ-orleans.fr/deg/masters/ESA/) Big Data Analytics class at [University of Orléans](https://www.univ-orleans.fr/fr/univ).
 
 
 ![Master ESA](www/Logo-couleur-MasterESA-RVB.jpg "Master ESA")     

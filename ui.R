@@ -119,29 +119,7 @@ ui <- dashboardPage(
                      
                      tabPanel(
                         
-                        title = "2. REFERENCE",
-                        
-                        br(),
-                        
-                        p("The main reference for this project is:"), br(),
-                        
-                        em(markdown(metadata[['REFERENCE']])),
-                        
-                        br(),
-                        
-                        em(markdown("<sup>[1](#)</sup> EconomiX-CNRS, University of Paris Nanterre, 200 Avenue de la République, 92000 Nanterre, France. E-mail: elena.dumitrescu@parisnanterre.fr")),
-                        
-                        em(markdown("<sup>[2](#)</sup> Corresponding author, Univ. Orléans, CNRS, LEO (FRE 2014), Rue de Blois, 45067 Orléans. E-mail: sullivan.hue@univ-orleans.fr")),
-                        
-                        em(markdown("<sup>[3](#)</sup> Univ. Orléans, CNRS, LEO (FRE 2014), Rue de Blois, 45067 Orléans. E-mail: christophe.hurlin@univ-orleans.fr")),
-                        
-                        em(markdown("<sup>[4](#)</sup> Univ. Orléans, CNRS, LEO (FRE 2014), Rue de Blois, 45067 Orléans. E-mail: sessi.tokpavi@univ-orleans.fr"))
-                        
-                     ),
-                     
-                     tabPanel(
-                        
-                        title = "3. SHOW ME SOME RULES!",
+                        title = "2. SHOW ME SOME RULES!",
                         
                         value = "panel_demo",
                         
@@ -229,7 +207,7 @@ ui <- dashboardPage(
                      
                      tabPanel(
                         
-                        title = "4. MAIN RESULTS",
+                        title = "3. MAIN RESULTS",
                         
                         br(),
                         
@@ -258,6 +236,28 @@ ui <- dashboardPage(
                            )
                            
                         )
+                        
+                     ),
+                     
+                     tabPanel(
+                        
+                        title = "4. REFERENCE",
+                        
+                        br(),
+                        
+                        p("The main reference for this project is:"), br(),
+                        
+                        em(markdown(metadata[['REFERENCE']])),
+                        
+                        br(),
+                        
+                        em(markdown("<sup>[1](#)</sup> EconomiX-CNRS, University of Paris Nanterre, 200 Avenue de la République, 92000 Nanterre, France. E-mail: elena.dumitrescu@parisnanterre.fr")),
+                        
+                        em(markdown("<sup>[2](#)</sup> Corresponding author, Univ. Orléans, CNRS, LEO (FRE 2014), Rue de Blois, 45067 Orléans. E-mail: sullivan.hue@univ-orleans.fr")),
+                        
+                        em(markdown("<sup>[3](#)</sup> Univ. Orléans, CNRS, LEO (FRE 2014), Rue de Blois, 45067 Orléans. E-mail: christophe.hurlin@univ-orleans.fr")),
+                        
+                        em(markdown("<sup>[4](#)</sup> Univ. Orléans, CNRS, LEO (FRE 2014), Rue de Blois, 45067 Orléans. E-mail: sessi.tokpavi@univ-orleans.fr"))
                         
                      )
                      
@@ -1123,21 +1123,27 @@ ui <- dashboardPage(
                   
                ),
                
-               tabBox(
+               box(
                   
-                  title = ("Developers"),
+                  title = "Developers",
                   
                   width = 6,
                   
-                  tabPanel(
+                  status = "primary",
+                  
+                  solidHeader = FALSE,
+                  
+                  style = "height: 280px;",
+                  
+                  br(),
+                  
+                  fluidRow(
                      
-                     title = strong("ZAINAB BELGADA"),
-                     
-                     p(
+                     column(
                         
-                        class = "text-center",
+                        width = 6, 
                         
-                        br(),
+                        align = "center",
                         
                         img(
                            
@@ -1145,30 +1151,33 @@ ui <- dashboardPage(
                            
                            src = "zainab_belgada.jpg"
                            
+                        ),
+                        
+                        br(),
+                        
+                        p(
+                           
+                           span(icon("envelope"), HTML('&nbsp;'), 
+                                "zainab.belgada@etu.univ-orleans.fr"),
+                           
+                           style = "font-size: 15px;"
+                           
+                        ),
+                        
+                        p(
+                           
+                           a(icon("linkedin", "fa-2x"), HTML('&nbsp;'), HTML('&nbsp;'), href = "https://fr.linkedin.com/in/za%C3%AFnab-belgada-b1175b1ab"),
+                           a(icon("github", "fa-2x"), href = "https://github.com/belzaina", style = "color: inherit;")
+                           
                         )
                         
                      ),
                      
-                     p(
+                     column(
                         
-                        class = "text-center",
+                        width = 6, 
                         
-                        span(icon("envelope"), HTML('&nbsp;'), 
-                             strong("zainab.belgada@etu.univ-orleans.fr"))
-                        
-                     )
-                     
-                  ),
-                  
-                  tabPanel(
-                     
-                     title = strong("ZINSOU DAMIEN"),
-                     
-                     p(
-                        
-                        class = "text-center",
-                        
-                        br(),
+                        align = "center",
                         
                         img(
                            
@@ -1176,16 +1185,24 @@ ui <- dashboardPage(
                            
                            src = "damien_zinsou.jpg"
                            
+                        ),
+                        
+                        br(),
+                        
+                        p(
+                           
+                           span(icon("envelope"), HTML('&nbsp;'), 
+                                "zinsou.mezonlin@etu.univ-orleans.fr"),
+                           
+                           style = "font-size: 15px;"
+                           
+                        ),
+                        
+                        p(
+                           
+                           a(icon("linkedin", "fa-2x"), href = "https://www.linkedin.com/in/zinsou-damien-m-7073861b6/")
+                           
                         )
-                        
-                     ),
-                     
-                     p(
-                        
-                        class = "text-center",
-                        
-                        span(icon("envelope"), HTML('&nbsp;'), 
-                             strong("zinsou.mezonlin@etu.univ-orleans.fr"))
                         
                      )
                      
