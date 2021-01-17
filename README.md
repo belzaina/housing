@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/belzaina/housing.svg?token=speK6yitTLXioyfS2PKH&branch=master)](https://travis-ci.com/belzaina/housing)     
      
-[![ForTheBadge built-with-science](http://ForTheBadge.com/images/badges/built-with-science.svg)](https://belgadazainab.shinyapps.io/housing/)
+[![SHINYAPPS.IO Status](https://img.shields.io/badge/shinyapps.io-up-green?style=for-the-badge)](https://belgadazainab.shinyapps.io/housing/)
 
 # Penalized Logistic Tree Regression (PLTR) - Housing Dataset (shinyapp)
 

@@ -18,9 +18,9 @@ ui <- dashboardPage(
          
          menuItem("EXPLORE THE DATASET", tabName = "explore_dataset", icon = icon("chart-bar")),
          
-         menuItem("MODELS", tabName = "models", icon = icon("chart-line")),
+         menuItem("MODELS TESTING", tabName = "models", icon = icon("chart-line")),
          
-         menuItem("DIETTERICH N x 2-FOLD CV", tabName = "cv", icon = icon("microscope")),
+         menuItem("ROBUSTNESS CHECK", tabName = "cv", icon = icon("microscope")),
          
          menuItem("REPRODUCIBLE RESEARCH", tabName = "reproducible_research", icon = icon("laptop-code")),
          
@@ -572,320 +572,326 @@ ui <- dashboardPage(
             
             fluidRow(
                
-               box(
+               column(
                   
                   width = 12,
                   
-                  tabsetPanel(
+                  box(
                      
-                     tabPanel(
+                     width = 12,
+                     
+                     tabsetPanel(
                         
-                        title = "Penalized Logistic Tree Regression",
-                        
-                        br(),
-                        
-                        uiOutput("pltr_cv_eval_metrics"),
-                        
-                        fluidRow(
+                        tabPanel(
                            
-                           column(
-                              
-                              width = 6,
-                              
-                              box(
-                                 
-                                 title = "TRAINING PARAMETERS",
-                                 
-                                 width = 12,
-                                 
-                                 numericInput("pltr_cv_seed", label = h4("Seed"), value = 8081, min = 1),
-                                 
-                                 numericInput("pltr_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
-                                 
-                                 radioButtons(
-                                    "pltr_cv_penalty", 
-                                    h4("Penalty"),
-                                    c("Adaptive LASSO"      = 2,
-                                      "LASSO"               = 1,
-                                      "Ridge"               = 0
-                                    )
-                                 ),
-                                 
-                                 br(),
-                                 
-                                 actionButton("pltr_cv_button", h4("Cross Validate!"), width = '100%')
-                                 
-                              )
-                              
-                           ),
+                           title = "Penalized Logistic Tree Regression",
                            
-                           column(
+                           br(),
+                           
+                           uiOutput("pltr_cv_eval_metrics"),
+                           
+                           fluidRow(
                               
-                              width = 6,
+                              column(
+                                 
+                                 width = 6,
+                                 
+                                 box(
+                                    
+                                    title = "TRAINING PARAMETERS",
+                                    
+                                    width = 12,
+                                    
+                                    numericInput("pltr_cv_seed", label = h4("Seed"), value = 8081, min = 1),
+                                    
+                                    numericInput("pltr_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
+                                    
+                                    radioButtons(
+                                       "pltr_cv_penalty", 
+                                       h4("Penalty"),
+                                       c("Adaptive LASSO"      = 2,
+                                         "LASSO"               = 1,
+                                         "Ridge"               = 0
+                                       )
+                                    ),
+                                    
+                                    br(),
+                                    
+                                    actionButton("pltr_cv_button", h4("DIETTERICH N x 2-FOLD CROSS-VALIDATION"), width = '100%')
+                                    
+                                 )
+                                 
+                              ),
                               
-                              box(
+                              column(
                                  
-                                 width = 12,
+                                 width = 6,
                                  
-                                 height = "471.8px",
-                                 
-                                 title = "CROSS VALIDATION RESULTS",
-                                 
-                                 br(),
-                                 
-                                 DT::dataTableOutput("pltr_cv_dt")
+                                 box(
+                                    
+                                    width = 12,
+                                    
+                                    height = "471.8px",
+                                    
+                                    title = "CROSS VALIDATION RESULTS",
+                                    
+                                    br(),
+                                    
+                                    DT::dataTableOutput("pltr_cv_dt")
+                                    
+                                 )
                                  
                               )
                               
                            )
                            
-                        )
+                        ),
                         
-                     ),
-                     
-                     tabPanel(
-                        
-                        title = "Random Forest",
-                        
-                        br(),
-                        
-                        uiOutput("rf_cv_eval_metrics"),
-                        
-                        fluidRow(
+                        tabPanel(
                            
-                           column(
-                              
-                              width = 6,
-                              
-                              box(
-                                 
-                                 title = "TRAINING PARAMETERS",
-                                 
-                                 width = 12,
-                                 
-                                 height = "471.8px",
-                                 
-                                 numericInput("rf_cv_seed", label = h4("Seed"), value = 8081, min = 1),
-                                 
-                                 numericInput("rf_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
-                                 
-                                 br(),
-                                 
-                                 actionButton("rf_cv_button", h4("Cross Validate!"), width = '100%')
-                                 
-                              )
-                              
-                           ),
+                           title = "Random Forest",
                            
-                           column(
-                              
-                              width = 6,
-                              
-                              box(
-                                 
-                                 width = 12,
-                                 
-                                 height = "471.8px",
-                                 
-                                 title = "CROSS VALIDATION RESULTS",
-                                 
-                                 br(),
-                                 
-                                 DT::dataTableOutput("rf_cv_dt")
-                                 
-                              )
-                              
-                           )
+                           br(),
                            
-                        )
-                        
-                     ),
-                     
-                     tabPanel(
-                        
-                        title = "Support Vector Machine",
-                        
-                        br(),
-                        
-                        uiOutput("svm_cv_eval_metrics"),
-                        
-                        fluidRow(
+                           uiOutput("rf_cv_eval_metrics"),
                            
-                           column(
+                           fluidRow(
                               
-                              width = 6,
+                              column(
+                                 
+                                 width = 6,
+                                 
+                                 box(
+                                    
+                                    title = "TRAINING PARAMETERS",
+                                    
+                                    width = 12,
+                                    
+                                    height = "471.8px",
+                                    
+                                    numericInput("rf_cv_seed", label = h4("Seed"), value = 8081, min = 1),
+                                    
+                                    numericInput("rf_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
+                                    
+                                    br(),
+                                    
+                                    actionButton("rf_cv_button", h4("DIETTERICH N x 2-FOLD CROSS-VALIDATION"), width = '100%')
+                                    
+                                 )
+                                 
+                              ),
                               
-                              box(
+                              column(
                                  
-                                 title = "TRAINING PARAMETERS",
+                                 width = 6,
                                  
-                                 width = 12,
-                                 
-                                 height = "471.8px",
-                                 
-                                 numericInput("svm_cv_seed", label = h4("Seed"), value = 8081, min = 1),
-                                 
-                                 numericInput("svm_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
-                                 
-                                 radioButtons(
-                                    "svm_cv_kernel", 
-                                    h4("Kernel"),
-                                    c("Radial" = "radial", 
-                                      "Polynomial" = "polynomial")
-                                 ),
-                                 
-                                 br(),
-                                 
-                                 actionButton("svm_cv_button", h4("Cross Validate!"), width = '100%')
-                                 
-                              )
-                              
-                           ),
-                           
-                           column(
-                              
-                              width = 6,
-                              
-                              box(
-                                 
-                                 width = 12,
-                                 
-                                 height = "471.8px",
-                                 
-                                 title = "CROSS VALIDATION RESULTS",
-                                 
-                                 br(),
-                                 
-                                 DT::dataTableOutput("svm_cv_dt")
+                                 box(
+                                    
+                                    width = 12,
+                                    
+                                    height = "471.8px",
+                                    
+                                    title = "CROSS VALIDATION RESULTS",
+                                    
+                                    br(),
+                                    
+                                    DT::dataTableOutput("rf_cv_dt")
+                                    
+                                 )
                                  
                               )
                               
                            )
                            
-                        )
+                        ),
                         
-                     ),
-                     
-                     tabPanel(
-                        
-                        title = "Linear Logistic Regression",
-                        
-                        br(),
-                        
-                        uiOutput("llr_cv_eval_metrics"),
-                        
-                        fluidRow(
+                        tabPanel(
                            
-                           column(
-                              
-                              width = 6,
-                              
-                              box(
-                                 
-                                 title = "TRAINING PARAMETERS",
-                                 
-                                 width = 12,
-                                 
-                                 numericInput("llr_cv_seed", label = h4("Seed"), value = 8081, min = 1),
-                                 
-                                 numericInput("llr_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
-                                 
-                                 radioButtons(
-                                    "llr_cv_penalty", 
-                                    h4("Penalty"),
-                                    c("No Penalty"          = -1, 
-                                      "Ridge"               = 0,
-                                      "LASSO"               = 1,
-                                      "Adaptive LASSO"      = 2)
-                                 ),
-                                 
-                                 br(),
-                                 
-                                 actionButton("llr_cv_button", h4("Cross Validate!"), width = '100%')
-                                 
-                              )
-                              
-                           ),
+                           title = "Support Vector Machine",
                            
-                           column(
+                           br(),
+                           
+                           uiOutput("svm_cv_eval_metrics"),
+                           
+                           fluidRow(
                               
-                              width = 6,
+                              column(
+                                 
+                                 width = 6,
+                                 
+                                 box(
+                                    
+                                    title = "TRAINING PARAMETERS",
+                                    
+                                    width = 12,
+                                    
+                                    height = "471.8px",
+                                    
+                                    numericInput("svm_cv_seed", label = h4("Seed"), value = 8081, min = 1),
+                                    
+                                    numericInput("svm_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
+                                    
+                                    radioButtons(
+                                       "svm_cv_kernel", 
+                                       h4("Kernel"),
+                                       c("Radial" = "radial", 
+                                         "Polynomial" = "polynomial")
+                                    ),
+                                    
+                                    br(),
+                                    
+                                    actionButton("svm_cv_button", h4("DIETTERICH N x 2-FOLD CROSS-VALIDATION"), width = '100%')
+                                    
+                                 )
+                                 
+                              ),
                               
-                              box(
+                              column(
                                  
-                                 width = 12,
+                                 width = 6,
                                  
-                                 height = "500.8px",
-                                 
-                                 title = "CROSS VALIDATION RESULTS",
-                                 
-                                 br(),
-                                 
-                                 DT::dataTableOutput("llr_cv_dt")
+                                 box(
+                                    
+                                    width = 12,
+                                    
+                                    height = "471.8px",
+                                    
+                                    title = "CROSS VALIDATION RESULTS",
+                                    
+                                    br(),
+                                    
+                                    DT::dataTableOutput("svm_cv_dt")
+                                    
+                                 )
                                  
                               )
                               
                            )
                            
-                        )
+                        ),
                         
-                     ),
-                     
-                     tabPanel(
-                        
-                        title = "Non-Linear Logistic Regression",
-                        
-                        br(),
-                        
-                        uiOutput("nllr_cv_eval_metrics"),
-                        
-                        fluidRow(
+                        tabPanel(
                            
-                           column(
+                           title = "Linear Logistic Regression",
+                           
+                           br(),
+                           
+                           uiOutput("llr_cv_eval_metrics"),
+                           
+                           fluidRow(
                               
-                              width = 6,
+                              column(
+                                 
+                                 width = 6,
+                                 
+                                 box(
+                                    
+                                    title = "TRAINING PARAMETERS",
+                                    
+                                    width = 12,
+                                    
+                                    numericInput("llr_cv_seed", label = h4("Seed"), value = 8081, min = 1),
+                                    
+                                    numericInput("llr_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
+                                    
+                                    radioButtons(
+                                       "llr_cv_penalty", 
+                                       h4("Penalty"),
+                                       c("No Penalty"          = -1, 
+                                         "Ridge"               = 0,
+                                         "LASSO"               = 1,
+                                         "Adaptive LASSO"      = 2)
+                                    ),
+                                    
+                                    br(),
+                                    
+                                    actionButton("llr_cv_button", h4("DIETTERICH N x 2-FOLD CROSS-VALIDATION"), width = '100%')
+                                    
+                                 )
+                                 
+                              ),
                               
-                              box(
+                              column(
                                  
-                                 title = "TRAINING PARAMETERS",
+                                 width = 6,
                                  
-                                 width = 12,
-                                 
-                                 numericInput("nllr_cv_seed", label = h4("Seed"), value = 8081, min = 1),
-                                 
-                                 numericInput("nllr_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
-                                 
-                                 radioButtons(
-                                    "nllr_cv_penalty", 
-                                    h4("Penalty"),
-                                    c("Ridge"               = 0,
-                                      "LASSO"               = 1,
-                                      "Adaptive LASSO"      = 2)
-                                 ),
-                                 
-                                 br(),
-                                 
-                                 actionButton("nllr_cv_button", h4("Cross Validate!"), width = '100%')
+                                 box(
+                                    
+                                    width = 12,
+                                    
+                                    height = "500.8px",
+                                    
+                                    title = "CROSS VALIDATION RESULTS",
+                                    
+                                    br(),
+                                    
+                                    DT::dataTableOutput("llr_cv_dt")
+                                    
+                                 )
                                  
                               )
                               
-                           ),
+                           )
                            
-                           column(
+                        ),
+                        
+                        tabPanel(
+                           
+                           title = "Non-Linear Logistic Regression",
+                           
+                           br(),
+                           
+                           uiOutput("nllr_cv_eval_metrics"),
+                           
+                           fluidRow(
                               
-                              width = 6,
+                              column(
+                                 
+                                 width = 6,
+                                 
+                                 box(
+                                    
+                                    title = "TRAINING PARAMETERS",
+                                    
+                                    width = 12,
+                                    
+                                    numericInput("nllr_cv_seed", label = h4("Seed"), value = 8081, min = 1),
+                                    
+                                    numericInput("nllr_cv_n", label = h4("N"), value = 5, min = 1, max = 10),
+                                    
+                                    radioButtons(
+                                       "nllr_cv_penalty", 
+                                       h4("Penalty"),
+                                       c("Ridge"               = 0,
+                                         "LASSO"               = 1,
+                                         "Adaptive LASSO"      = 2)
+                                    ),
+                                    
+                                    br(),
+                                    
+                                    actionButton("nllr_cv_button", h4("DIETTERICH N x 2-FOLD CROSS-VALIDATION"), width = '100%')
+                                    
+                                 )
+                                 
+                              ),
                               
-                              box(
+                              column(
                                  
-                                 width = 12,
+                                 width = 6,
                                  
-                                 height = "471.8px",
-                                 
-                                 title = "CROSS VALIDATION RESULTS",
-                                 
-                                 br(),
-                                 
-                                 DT::dataTableOutput("nllr_cv_dt")
+                                 box(
+                                    
+                                    width = 12,
+                                    
+                                    height = "471.8px",
+                                    
+                                    title = "CROSS VALIDATION RESULTS",
+                                    
+                                    br(),
+                                    
+                                    DT::dataTableOutput("nllr_cv_dt")
+                                    
+                                 )
                                  
                               )
                               
@@ -934,7 +940,7 @@ ui <- dashboardPage(
                         choices = list(
                            
                            "Robustness Check" = "robustness_check",
-                           "PLTR: How it Works" = "pltr_how"
+                           "PLTR: Predictors Importance" = "pltr_var_imp"
                            
                         )
                         
@@ -965,6 +971,151 @@ ui <- dashboardPage(
                         
                      )
                      
+                  ),
+                  
+                  conditionalPanel(
+                     
+                     condition = "input.tutorial == 'pltr_var_imp'",
+                     
+                     fluidRow(
+                        
+                        tags$iframe(
+                           
+                           style = "height:650px; width:100%", 
+                           src = "vignettes/pltr_var_importance.pdf"
+                           
+                        ),
+                        
+                        align = "center"
+                        
+                     )
+                     
+                  )
+                  
+               )
+               
+            )
+            
+         ),
+         
+         tabItem(
+            
+            tabName = "about",
+            
+            br(),
+            
+            fluidRow(
+               
+               column(
+                  
+                  width = 12,
+                  
+                  align = "center",
+                  
+                  img(src = "Logo-couleur-MasterESA-RVB.jpg")
+                  
+               )
+               
+            ),
+            
+            br(), br(),
+            
+            fluidRow(
+               
+               box(
+                  
+                  width = 6,
+                  
+                  status = "primary",
+                  
+                  solidHeader = FALSE,
+                  
+                  style = "height: 280px;",
+                  
+                  title = ("About This Project"),
+                  
+                  markdown(
+                     
+                     metadata[['ABOUT_PROJECT_1']]
+                     
+                  ),
+                  
+                  p(metadata[['ABOUT_PROJECT_2']]),
+                  
+                  em(markdown(
+                     
+                     metadata[['ABOUT_PROJECT_3']]
+                     
+                  ))
+                  
+               ),
+               
+               tabBox(
+                  
+                  title = ("Developers"),
+                  
+                  width = 6,
+                  
+                  tabPanel(
+                     
+                     title = strong("ZAINAB BELGADA"),
+                     
+                     p(
+                        
+                        class = "text-center",
+                        
+                        br(),
+                        
+                        img(
+                           
+                           class = "img-responsive img-rounded center-block", 
+                           
+                           src = "zainab_belgada.jpg"
+                           
+                        )
+                        
+                     ),
+                     
+                     p(
+                        
+                        class = "text-center",
+                        
+                        span(icon("envelope"), HTML('&nbsp;'), 
+                             strong("zainab.belgada@etu.univ-orleans.fr"))
+                        
+                     )
+                     
+                  ),
+                  
+                  tabPanel(
+                     
+                     title = strong("ZINSOU DAMIEN"),
+                     
+                     p(
+                        
+                        class = "text-center",
+                        
+                        br(),
+                        
+                        img(
+                           
+                           class = "img-responsive img-rounded center-block", 
+                           
+                           src = "damien_zinsou.jpg"
+                           
+                        )
+                        
+                     ),
+                     
+                     p(
+                        
+                        class = "text-center",
+                        
+                        span(icon("envelope"), HTML('&nbsp;'), 
+                             strong("zinsou.mezonlin@etu.univ-orleans.fr"))
+                        
+                     )
+                     
                   )
                   
                )
@@ -973,14 +1124,8 @@ ui <- dashboardPage(
             
          )
          
-      ),
-      
-      tabItem(
-         
-         tabName = "about",
-         
       )
       
-   ),
+   )
    
 )

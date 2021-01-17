@@ -26,7 +26,13 @@ metadata <- list(
    
    "LASSO_RIDGE_WAITING_MSG" = "Having fun while penalizing some predictors...",
    
-   "NLLR_WAITING_MSG" = "Trying to be smarter by also learning from interaction and quadratic terms..."
+   "NLLR_WAITING_MSG" = "Trying to be smarter by also learning from interaction and quadratic terms...",
+   
+   "ABOUT_PROJECT_1" = 'This project was conducted by [ZAINAB BELGADA](https://fr.linkedin.com/in/za%C3%AFnab-belgada-b1175b1ab) and [ZINSOU DAMIEN](https://www.linkedin.com/in/zinsou-damien-m-7073861b6/) under the supervision of Professor [TOKPAVI SESSI](http://www.leo-univ-orleans.fr/fr/membres/#sessi.tokpavi@univ-orleans.fr) for Autumn 2020 [Master ESA](https://www.univ-orleans.fr/deg/masters/ESA/) Big Data Analytics class at [University of Orléans](https://www.univ-orleans.fr/fr/univ).',
+   
+   "ABOUT_PROJECT_2" = "The main reference for this project is:",
+   
+   "ABOUT_PROJECT_3" = '> Elena Dumitrescuy, Sullivan Hué, Christophe Hurlinx, and Sessi Tokpavi "Machine Learning or Econometrics for Credit Scoring: Let\'s Get the Best of Both Worlds", October 15, 2020.'
    
 )
 
