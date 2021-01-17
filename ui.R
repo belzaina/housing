@@ -14,6 +14,8 @@ ui <- dashboardPage(
       
       sidebarMenu(
          
+         id = "main_menu",
+         
          menuItem("INTRODUCTION", tabName = "introduction", icon = icon("door-open")),
          
          menuItem("EXPLORE THE DATASET", tabName = "explore_dataset", icon = icon("chart-bar")),
@@ -68,6 +70,8 @@ ui <- dashboardPage(
                   
                   tabsetPanel(
                      
+                     id = "panel_intro",
+                     
                      tabPanel(
                         
                         title = "1. OUTLINE",
@@ -76,27 +80,38 @@ ui <- dashboardPage(
                         
                         p(metadata[["INTRO_1"]]),
                         
-                        br(),
-                        
                         tags$ul(
                            
                            tags$li(metadata[["INTRO_2"]]),
                            
                            tags$li(metadata[["INTRO_3"]])
                            
-                        ),
+                        ), br(),
                         
-                        br(),
-                        
-                        p(metadata[["INTRO_4"]]),
-                        
-                        br(),
+                        p(metadata[["INTRO_4"]]), 
                         
                         tags$ul(
                            
-                           tags$li(metadata[["INTRO_5"]]),
+                           tags$li(metadata[["INTRO_5"]], 
+                                   actionLink("link_to_demo",strong("(SHOW INTERACTIVE DEMO)"))),
                            
                            tags$li(metadata[["INTRO_6"]])
+                           
+                        ), br(),
+                        
+                        p("This application allows you to:"),
+                        
+                        tags$ul(
+                           
+                           tags$li(actionLink("link_to_vis", strong("Visualize interactively how PLTR extract new rules"))),
+                           
+                           tags$li(actionLink("link_to_explore", strong("Explore the housing dataset"))),
+                           
+                           tags$li(actionLink("link_to_train", strong("Train and test learning algorithms (including an analysis of predictors importance)"))),
+                           
+                           tags$li(actionLink("link_to_cv", strong("Perform robustness checking using N x 2-fold cross-validation"))),
+                           
+                           tags$li(actionLink("link_to_tuto", strong("Follow guided tutorials in case you wish to reproduce our results")))
                            
                         )
                         
@@ -104,7 +119,31 @@ ui <- dashboardPage(
                      
                      tabPanel(
                         
-                        title = "2. SHOW ME SOME RULES!",
+                        title = "2. REFERENCE",
+                        
+                        br(),
+                        
+                        p("The main reference for this project is:"), br(),
+                        
+                        em(markdown(metadata[['REFERENCE']])),
+                        
+                        br(),
+                        
+                        em(markdown("<sup>[1](#)</sup> EconomiX-CNRS, University of Paris Nanterre, 200 Avenue de la République, 92000 Nanterre, France. E-mail: elena.dumitrescu@parisnanterre.fr")),
+                        
+                        em(markdown("<sup>[2](#)</sup> Corresponding author, Univ. Orléans, CNRS, LEO (FRE 2014), Rue de Blois, 45067 Orléans. E-mail: sullivan.hue@univ-orleans.fr")),
+                        
+                        em(markdown("<sup>[3](#)</sup> Univ. Orléans, CNRS, LEO (FRE 2014), Rue de Blois, 45067 Orléans. E-mail: christophe.hurlin@univ-orleans.fr")),
+                        
+                        em(markdown("<sup>[4](#)</sup> Univ. Orléans, CNRS, LEO (FRE 2014), Rue de Blois, 45067 Orléans. E-mail: sessi.tokpavi@univ-orleans.fr"))
+                        
+                     ),
+                     
+                     tabPanel(
+                        
+                        title = "3. SHOW ME SOME RULES!",
+                        
+                        value = "panel_demo",
                         
                         br(),
                         
@@ -118,7 +157,7 @@ ui <- dashboardPage(
                            
                            title = "PREDICTORS SET",
                            
-                           br(),
+                           h4("Choose among:"),
                            
                            uiOutput("predictors_set")
                            
@@ -181,6 +220,40 @@ ui <- dashboardPage(
                                  uiOutput("extracted_rules")
                                  
                               )
+                              
+                           )
+                           
+                        )
+                        
+                     ),
+                     
+                     tabPanel(
+                        
+                        title = "4. MAIN RESULTS",
+                        
+                        br(),
+                        
+                        p("Our 5 x 2-fold cross-validation results are as follow: "),
+                        
+                        br(),
+                        
+                        fluidRow(
+                           
+                           column(
+                              
+                              width = 6,
+                              
+                              offset = 2,
+                              
+                              plotOutput("main_results")
+                              
+                           ),
+                           
+                           column(
+                              
+                              width = 4,
+                              
+                              actionLink("link_to_notebook",strong("(SHOW COMPLETE NOTEBOOK)"))
                               
                            )
                            

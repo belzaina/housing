@@ -32,7 +32,9 @@ metadata <- list(
    
    "ABOUT_PROJECT_2" = "The main reference for this project is:",
    
-   "ABOUT_PROJECT_3" = '> Elena Dumitrescuy, Sullivan Hué, Christophe Hurlinx, and Sessi Tokpavi "Machine Learning or Econometrics for Credit Scoring: Let\'s Get the Best of Both Worlds", October 15, 2020.'
+   "ABOUT_PROJECT_3" = '> Elena Dumitrescu, Sullivan Hué, Christophe Hurlin, and Sessi Tokpavi "Machine Learning or Econometrics for Credit Scoring: Let\'s Get the Best of Both Worlds", October 15, 2020.',
+   
+   "REFERENCE" = '> Elena Dumitrescu <sup>[1](#)</sup>, Sullivan Hué <sup>[2](#)</sup>, Christophe Hurlin <sup>[3](#)</sup>, and Sessi Tokpavi <sup>[4](#)</sup> "Machine Learning or Econometrics for Credit Scoring: Let\'s Get the Best of Both Worlds", October 15, 2020.'
    
 )
 

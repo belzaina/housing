@@ -79,7 +79,35 @@ nllr_cv_results_dt <- reactiveValues(
 
 
 
-server <- function(input, output) {
+server <- function(input, output, session) {
+   
+   observeEvent(input$link_to_demo, {
+      updateTabsetPanel(session, "panel_intro", "panel_demo")
+   })
+   
+   observeEvent(input$link_to_vis, {
+      updateTabsetPanel(session, "panel_intro", "panel_demo")
+   })
+   
+   observeEvent(input$link_to_notebook, {
+      updateTabItems(session, "main_menu", "reproducible_research")
+   })
+   
+   observeEvent(input$link_to_explore, {
+      updateTabItems(session, "main_menu", "explore_dataset")
+   })
+   
+   observeEvent(input$link_to_train, {
+      updateTabItems(session, "main_menu", "models")
+   })
+   
+   observeEvent(input$link_to_cv, {
+      updateTabItems(session, "main_menu", "cv")
+   })
+   
+   observeEvent(input$link_to_tuto, {
+      updateTabItems(session, "main_menu", "reproducible_research")
+   })
    
    output$n_rows <- renderText(n_rows)
    
@@ -1778,6 +1806,43 @@ server <- function(input, output) {
          br()
          
       )
+      
+   })
+   
+   output$main_results <- renderPlot({
+      
+      dplyr::tibble(
+         
+         Learning_Algo = c(
+            "RANDOM FOREST",
+            "PLTR (RIDGE)",
+            "PLTR (LASSO)",
+            "PLTR (ADAPTIVE LASSO)",
+            "SVM (RADIAL)",
+            "NON-LINEAR LR (LASSO)",
+            "NON-LINEAR LR (RIDGE)",
+            "LINEAR LR",
+            "LINEAR LR (RIDGE)",
+            "LINEAR LR (LASSO)",
+            "NON-LINEAR LR (ADAPTIVE LASSO)",
+            "LINEAR LR (ADAPTIVE LASSO)",
+            "SVM (POLYNOMIAL)"
+         ),
+         
+         AUC = c(0.955, 0.91101, 0.911, 0.907, 0.823, 0.821, 0.819, 0.79201, 0.792, 0.791, 0.789, 0.786, 0.783)
+         
+      ) %>%
+         dplyr::mutate(
+            Learning_Algo = factor(Learning_Algo, levels = Learning_Algo[order(AUC)])
+         ) %>%
+         ggplot(aes(x = Learning_Algo, y = AUC)) +
+         geom_bar(stat = "identity", fill = "#f68060", alpha = .6, width = .7) +
+         coord_flip() +
+         xlab("") +
+         ylab("AUC") +
+         geom_text(aes(label = round(AUC, 3), hjust = 1.2), color = "darkblue", size = 5) +
+         theme_bw() +
+         theme(axis.text = element_text(size=12, face = "bold"), axis.title.x = element_text(size=16))
       
    })
    
