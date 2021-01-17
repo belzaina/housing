@@ -61,7 +61,7 @@ This project was conducted by [ZAINAB BELGADA](https://fr.linkedin.com/in/za%C3%
 ![Master ESA](www/Logo-couleur-MasterESA-RVB.jpg "Master ESA")     
 
      
-### Footnotes
+### Footnotes:
      
 
 <b id="f1">1. </b> Elena Dumitrescuy, Sullivan Hué, Christophe Hurlinx, and Sessi Tokpavi "Machine Learning or Econometrics for Credit Scoring: Let's Get the Best of Both Worlds", October 15, 2020. [↩](#a1)    
